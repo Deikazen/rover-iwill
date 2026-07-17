@@ -27,5 +27,5 @@ engine = create_engine(DATABASE_URL, poolclass=NullPool)
 try:
     with engine.connect() as connection:
         print("Connection successful!")
-except Exception as e:
+except ConnectionError as e:
     print(f"Failed to connect: {e}")
