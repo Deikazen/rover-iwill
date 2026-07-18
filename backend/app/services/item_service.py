@@ -49,7 +49,7 @@ class ItemService:
 
     @staticmethod
     def update(db: Session, content_id: int, payload: ItemUpdate):
-        db_content = db_query(ItemsModel).filter(
+        db_content = db.query(ItemsModel).filter(
             ItemsModel.id == content_id).first()
 
         if not db_content:
@@ -74,3 +74,17 @@ class ItemService:
         db.delete(db_content)
         db.commit()
         return True
+
+    @staticmethod
+    def update_image(db: Session, content_id: int, image_url: str):
+        db_content = db.query(ItemsModel).filter(
+            ItemsModel.id == content_id).first()
+
+        if not db_content:
+            return None
+
+        db_content.image_url = image_url
+        db.commit()
+        db.refresh(db_content)
+        return db_content
+
