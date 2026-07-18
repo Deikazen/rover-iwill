@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 
 interface RoverItem {
   id: number;
@@ -50,6 +50,51 @@ export default function LandingClient({ initialItems }: LandingClientProps) {
   const [formSubJudul, setFormSubJudul] = useState('');
   const [formDeskripsi, setFormDeskripsi] = useState('');
   const [formImageUrl, setFormImageUrl] = useState('');
+
+  // Upload state & tabs
+  const [isUploading, setIsUploading] = useState(false);
+  const [imageTab, setImageTab] = useState<'upload' | 'url'>('upload');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      triggerStatus('File harus berupa gambar (image/*)!', 'error');
+      return;
+    }
+
+    setIsUploading(true);
+    triggerStatus('Mengunggah gambar ke Supabase Storage...', 'success');
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('http://127.0.0.1:8000/items/upload-image', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Upload gagal: HTTP ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (data.image_url) {
+        setFormImageUrl(data.image_url);
+        triggerStatus('Gambar berhasil diunggah ke storage!', 'success');
+      } else {
+        throw new Error('Response tidak berisi image_url');
+      }
+    } catch (err: any) {
+      console.error('Error uploading image:', err);
+      triggerStatus(`Gagal mengunggah gambar: ${err.message}`, 'error');
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   // Status message
   const [actionStatus, setActionStatus] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
@@ -691,37 +736,119 @@ export default function LandingClient({ initialItems }: LandingClientProps) {
                 />
               </div>
 
-              {/* Form Input: Image URL */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold uppercase tracking-wider text-zinc-300 block">
-                  URL Gambar Telemetri
-                </label>
-                <input 
-                  type="text"
-                  placeholder="Masukkan url gambar (https://...)"
-                  value={formImageUrl}
-                  onChange={(e) => setFormImageUrl(e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg bg-zinc-950 border border-white/5 text-zinc-100 text-sm focus:outline-none focus:border-[#F97316]/50 focus:ring-1 focus:ring-[#F97316]/50 transition-all font-mono"
-                />
-                
-                {/* Image Presets Selector */}
-                <div className="pt-2">
-                  <span className="text-[10px] text-zinc-500 font-mono block mb-1.5">Preset gambar kosmik:</span>
-                  <div className="flex gap-2">
-                    {IMAGE_PRESETS.map((preset, idx) => (
-                      <button
-                        key={idx}
-                        type="button"
-                        onClick={() => setFormImageUrl(preset)}
-                        className={`h-10 w-14 rounded overflow-hidden border cursor-pointer transition-all ${
-                          formImageUrl === preset ? 'border-[#F97316] ring-1 ring-[#F97316]' : 'border-white/5 hover:border-white/20'
-                        }`}
-                      >
-                        <img src={preset} className="h-full w-full object-cover" alt="" />
-                      </button>
-                    ))}
+              {/* Form Input: Image Source Selector & Input */}
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <label className="text-xs font-semibold uppercase tracking-wider text-zinc-300">
+                    Gambar Telemetri
+                  </label>
+                  {/* Tabs */}
+                  <div className="flex gap-1.5 p-0.5 rounded-lg bg-zinc-950 border border-white/5">
+                    <button
+                      type="button"
+                      onClick={() => setImageTab('upload')}
+                      className={`px-3 py-1 rounded-md text-[10px] font-semibold tracking-wide transition-all cursor-pointer ${
+                        imageTab === 'upload'
+                          ? 'bg-zinc-800 text-white border border-white/5'
+                          : 'text-zinc-500 hover:text-zinc-300'
+                      }`}
+                    >
+                      Unggah File
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setImageTab('url')}
+                      className={`px-3 py-1 rounded-md text-[10px] font-semibold tracking-wide transition-all cursor-pointer ${
+                        imageTab === 'url'
+                          ? 'bg-zinc-800 text-white border border-white/5'
+                          : 'text-zinc-500 hover:text-zinc-300'
+                      }`}
+                    >
+                      Tautan URL
+                    </button>
                   </div>
                 </div>
+
+                {imageTab === 'upload' ? (
+                  /* File Picker Tab */
+                  <div className="space-y-3">
+                    <div 
+                      onClick={() => fileInputRef.current?.click()}
+                      className="border-2 border-dashed border-white/10 hover:border-[#F97316]/50 bg-zinc-950 rounded-xl p-6 flex flex-col items-center justify-center gap-3 cursor-pointer transition-all hover:bg-zinc-900/20 group relative overflow-hidden min-h-[140px]"
+                    >
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        ref={fileInputRef} 
+                        onChange={handleFileChange} 
+                        className="hidden" 
+                      />
+                      
+                      {isUploading ? (
+                        <div className="flex flex-col items-center gap-2">
+                          <svg className="animate-spin h-8 w-8 text-[#F97316]" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                          </svg>
+                          <span className="text-xs text-zinc-400 font-mono">Mengunggah ke Storage...</span>
+                        </div>
+                      ) : formImageUrl ? (
+                        <div className="flex flex-col items-center gap-2 w-full">
+                          <div className="h-16 w-24 rounded border border-white/10 overflow-hidden bg-zinc-900">
+                            <img src={formImageUrl} className="h-full w-full object-cover" alt="Preview" />
+                          </div>
+                          <span className="text-[10px] text-emerald-400 font-mono flex items-center gap-1.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                            File Gambar Siap
+                          </span>
+                          <span className="text-[10px] text-zinc-500 font-mono underline hover:text-zinc-300">Ganti file...</span>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col items-center gap-2 text-center">
+                          <div className="w-10 h-10 rounded-full bg-white/[0.03] border border-white/5 flex items-center justify-center text-zinc-400 group-hover:text-[#F97316] group-hover:scale-110 transition-all duration-300">
+                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                            </svg>
+                          </div>
+                          <div>
+                            <p className="text-xs text-zinc-300 font-medium">Klik untuk memilih file gambar</p>
+                            <p className="text-[10px] text-zinc-500 mt-1">Mendukung JPEG, PNG, WEBP (maks. 5MB)</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  /* URL & Presets Tab */
+                  <div className="space-y-4">
+                    <input 
+                      type="text"
+                      placeholder="Masukkan url gambar (https://...)"
+                      value={formImageUrl}
+                      onChange={(e) => setFormImageUrl(e.target.value)}
+                      className="w-full px-4 py-3 rounded-lg bg-zinc-950 border border-white/5 text-zinc-100 text-sm focus:outline-none focus:border-[#F97316]/50 focus:ring-1 focus:ring-[#F97316]/50 transition-all font-mono"
+                    />
+                    
+                    {/* Image Presets Selector */}
+                    <div>
+                      <span className="text-[10px] text-zinc-500 font-mono block mb-1.5">Preset gambar kosmik:</span>
+                      <div className="flex gap-2">
+                        {IMAGE_PRESETS.map((preset, idx) => (
+                          <button
+                            key={idx}
+                            type="button"
+                            onClick={() => setFormImageUrl(preset)}
+                            className={`h-10 w-14 rounded overflow-hidden border cursor-pointer transition-all ${
+                              formImageUrl === preset ? 'border-[#F97316] ring-1 ring-[#F97316]' : 'border-white/5 hover:border-white/20'
+                            }`}
+                          >
+                            <img src={preset} className="h-full w-full object-cover" alt="" />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Form Input: Description */}
