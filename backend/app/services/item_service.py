@@ -87,4 +87,3 @@ class ItemService:
         db.commit()
         db.refresh(db_content)
         return db_content
-
