@@ -16,7 +16,7 @@ class ItemCreate(ItemSchema):
     pass
 
 
-class ItemUpdatee(ItemSchema):
+class ItemUpdate(ItemSchema):
     judul: str | None = None
 
 
@@ -29,8 +29,6 @@ class ItemResponse(ItemSchema):
 
 
 # Logika Bisnis
-
-
 class ItemService:
 
     @staticmethod
@@ -42,12 +40,37 @@ class ItemService:
         return db.query(ItemsModel).filter(ItemsModel.id == content_id).first()
 
     @staticmethod
-    def create(db: Session, payload: ItemsModel):
+    def create(db: Session, payload: ItemCreate):
         new_content = ItemsModel(**payload.model_dump())
+        db.add(new_content)
         db.commit()
         db.refresh(new_content)
         return new_content
 
     @staticmethod
-    def update(db: Session, content_id: int, payload: ItemsModel):
-        db_content = ItemsModel
+    def update(db: Session, content_id: int, payload: ItemUpdate):
+        db_content = db_query(ItemsModel).filter(
+            ItemsModel.id == content_id).first()
+
+        if not db_content:
+            return None
+
+        update_data = payload.model_dump(exclude_unset=True)
+        for key, value in update_data.items():
+            setattr(db_content, key, value)
+
+        db.commit()
+        db.refresh(db_content)
+        return db_content
+
+    @staticmethod
+    def delete(db: Session, content_id: int):
+        db_content = db.query(ItemsModel).filter(
+            ItemsModel.id == content_id).first()
+
+        if not db_content:
+            return False
+
+        db.delete(db_content)
+        db.commit()
+        return True
