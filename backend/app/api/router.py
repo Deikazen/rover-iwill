@@ -3,6 +3,10 @@ from fastapi import APIRouter
 router = APIRouter()
 
 
-@router.get('/', tags=['api'])
-async def read_api():
-    return "Hello Api"
+@router.get('/', tags=['items'])
+async def read_items():
+    return "Hello Items"
+
+
+# @router.post('/', tags=['items'])
+# async def post_items():
