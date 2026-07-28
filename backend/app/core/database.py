@@ -39,6 +39,13 @@ class ItemsModel(Base):
     sub_judul = Column(String, nullable=True)
     deskripsi = Column(String, nullable=True)
     image_url = Column(String, nullable=True)
+    status = Column(String, default="active", nullable=True)
+    launch_date = Column(String, nullable=True)
+    landing_date = Column(String, nullable=True)
+    landing_site = Column(String, nullable=True)
+    weight = Column(String, nullable=True)
+    dist_traveled = Column(String, nullable=True)
+    power_source = Column(String, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 

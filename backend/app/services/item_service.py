@@ -10,6 +10,13 @@ class ItemSchema(BaseModel):
     sub_judul: str | None = None
     deskripsi: str | None = None
     image_url: str | None = None
+    status: str | None = "active"
+    launch_date: str | None = None
+    landing_date: str | None = None
+    landing_site: str | None = None
+    weight: str | None = None
+    dist_traveled: str | None = None
+    power_source: str | None = None
 
 
 class ItemCreate(ItemSchema):
