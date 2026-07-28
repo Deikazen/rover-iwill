@@ -1,17 +1,9 @@
 import React from 'react';
 import LandingClient from './LandingClient';
+import { RoverItem } from './types';
 
 // Ensure the page is dynamically rendered on every request to fetch fresh database data
 export const dynamic = 'force-dynamic';
-
-interface RoverItem {
-  id: number;
-  judul: string;
-  sub_judul: string | null;
-  deskripsi: string | null;
-  image_url: string | null;
-  created_at: string;
-}
 
 // Fetch items from the backend database server-side
 async function getItems(): Promise<RoverItem[]> {
