@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 
 interface RoverHeaderProps {
   isBackendConnected: boolean;
@@ -34,6 +35,13 @@ export default function RoverHeader({ isBackendConnected, onLaunchClick }: Rover
               {isBackendConnected ? 'TELEMETRY SECURE (DATABASE)' : 'SANDBOX MODE (OFFLINE)'}
             </span>
           </div>
+
+          <Link 
+            href="/dashboard"
+            className="px-4 py-2 rounded-lg bg-amber-500/20 border border-amber-500/40 text-amber-400 text-sm font-semibold tracking-wide hover:bg-amber-500/30 transition-all flex items-center gap-2"
+          >
+            <span>Live Dashboard</span>
+          </Link>
 
           <button 
             onClick={onLaunchClick}
