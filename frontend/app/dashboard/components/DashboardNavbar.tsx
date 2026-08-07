@@ -60,8 +60,8 @@ export default function DashboardNavbar({
       {/* Brand & Logo */}
       <div className="flex items-center gap-3 w-full lg:w-auto justify-between lg:justify-start">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-500/50 flex items-center justify-center text-amber-400 shadow-[0_0_15px_rgba(234,179,8,0.25)]">
-            <Radio className="w-4 h-4 animate-pulse" />
+          <div className="w-9 h-9 rounded-sm bg-yellow-400  flex items-center justify-center  ">
+            <Radio className="w-4 h-4 text-black " />
           </div>
           <div>
             <h1 className="text-base font-black tracking-widest text-white leading-none flex items-center gap-2">
@@ -75,7 +75,7 @@ export default function DashboardNavbar({
           {/* Connection Status Badge */}
           <div className="ml-3 pl-3 border-l border-slate-800 flex items-center gap-2">
             <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className=" absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
             <span className="text-[11px] font-bold tracking-wider text-emerald-400 uppercase hidden sm:inline">
