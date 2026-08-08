@@ -16,18 +16,18 @@ export default function Navbar() {
           <ul className="flex flex-1 items-center justify-end gap-3">
             <li>
               <Link
-                href="/signin"
+                href="/dashboard"
                 className="btn-sm rounded-xl bg-white/60 px-3 py-1.5 text-sm font-medium text-gray-800 shadow-sm backdrop-blur-sm transition-all hover:bg-white/90 hover:shadow"
               >
-                Login
+                Dashboard
               </Link>
             </li>
             <li>
               <Link
-                href="/signup"
+                href="/"
                 className="btn-sm rounded-xl bg-gray-900/90 px-3 py-1.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-gray-900"
               >
-                Register
+                Home
               </Link>
             </li>
           </ul>
