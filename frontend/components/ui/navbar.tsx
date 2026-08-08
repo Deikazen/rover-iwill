@@ -27,8 +27,8 @@ export default function Navbar() {
                 href="/"
                 className={`btn-sm rounded-xl px-3.5 py-1.5 text-sm font-semibold transition-all ${
                   pathname === "/"
-                    ? "bg-linear-to-r from-amber-400 via-yellow-500 to-amber-600 text-slate-950 shadow-md shadow-amber-500/20 hover:brightness-105"
-                    : "bg-white/60 text-gray-800 shadow-sm backdrop-blur-sm hover:bg-amber-50 hover:text-amber-700"
+                    ? "bg-yellow-400 text-slate-950 shadow-xs hover:bg-yellow-300"
+                    : "bg-white/60 text-gray-800 shadow-sm backdrop-blur-sm hover:bg-yellow-100 hover:text-yellow-900"
                 }`}
               >
                 Home
@@ -39,8 +39,8 @@ export default function Navbar() {
                 href="/dashboard"
                 className={`btn-sm rounded-xl px-3.5 py-1.5 text-sm font-semibold transition-all ${
                   pathname?.startsWith("/dashboard")
-                    ? "bg-linear-to-r from-amber-400 via-yellow-500 to-amber-600 text-slate-950 shadow-md shadow-amber-500/20 hover:brightness-105"
-                    : "bg-white/60 text-gray-800 shadow-sm backdrop-blur-sm hover:bg-amber-50 hover:text-amber-700"
+                    ? "bg-yellow-400 text-slate-950 shadow-xs hover:bg-yellow-300"
+                    : "bg-white/60 text-gray-800 shadow-sm backdrop-blur-sm hover:bg-yellow-100 hover:text-yellow-900"
                 }`}
               >
                 Dashboard

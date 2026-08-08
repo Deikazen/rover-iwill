@@ -89,7 +89,7 @@ export default function HeroHome() {
                   data-aos-delay={450}
                 >
                   <a
-                    className="btn group mb-4 w-full bg-linear-to-r from-amber-400 via-yellow-500 to-amber-600 text-slate-950 font-bold shadow-md shadow-amber-500/25 hover:brightness-105 sm:mb-0 sm:w-auto transition-all"
+                    className="btn group mb-4 w-full bg-yellow-400 text-slate-950 font-bold shadow-sm hover:bg-yellow-300 sm:mb-0 sm:w-auto transition-all"
                     href="#0"
                   >
                     <span className="relative inline-flex items-center">
@@ -100,7 +100,7 @@ export default function HeroHome() {
                     </span>
                   </a>
                   <a
-                    className="btn w-full bg-white text-gray-800 border border-gray-200 shadow-sm hover:bg-amber-50 hover:text-amber-700 hover:border-amber-400/50 sm:ml-4 sm:w-auto transition-all"
+                    className="btn w-full bg-white text-gray-800 border border-gray-200 shadow-sm hover:bg-yellow-50 hover:text-yellow-900 hover:border-yellow-300 sm:ml-4 sm:w-auto transition-all"
                     href="#0"
                   >
                     Learn More

@@ -3,9 +3,8 @@ import { IoIosRadio } from "react-icons/io";
 
 export default function Logo() {
   return (
-    <div className="flex h-12 w-12 items-center bg-yellow-300 justify-center rounded-sm font-black ">
-      {/* Mengubah ukuran ikon menjadi 32px */}
-      <IoIosRadio size={32} />
+    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-yellow-400 text-slate-950 font-black shadow-xs">
+      <IoIosRadio size={24} />
     </div>
   );
 }

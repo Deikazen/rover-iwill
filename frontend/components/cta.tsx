@@ -35,7 +35,7 @@ export default function Cta() {
             </h2>
             <div className="mx-auto max-w-xs sm:flex sm:max-w-none sm:justify-center">
               <a
-                className="btn group mb-4 w-full bg-linear-to-r from-amber-400 via-yellow-500 to-amber-600 text-slate-950 font-bold shadow-lg shadow-amber-500/25 hover:brightness-105 sm:mb-0 sm:w-auto transition-all"
+                className="btn group mb-4 w-full bg-yellow-400 text-slate-950 font-bold shadow-md hover:bg-yellow-300 sm:mb-0 sm:w-auto transition-all"
                 href="#0"
               >
                 <span className="relative inline-flex items-center">

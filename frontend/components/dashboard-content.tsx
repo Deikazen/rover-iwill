@@ -266,7 +266,7 @@ export default function DashboardContent() {
               <button
                 type="button"
                 onClick={() => setShowTerminateModal(true)}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-linear-to-r from-red-600 to-rose-600 px-4 py-2 text-xs font-bold text-white shadow-md shadow-red-500/20 hover:from-red-700 hover:to-rose-700 transition-all cursor-pointer uppercase tracking-wider"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-red-600 px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-red-700 transition-all cursor-pointer uppercase tracking-wider"
               >
                 <svg
                   className="h-3.5 w-3.5"
@@ -573,7 +573,7 @@ export default function DashboardContent() {
                     <div className="flex flex-col items-center gap-1">
                       <div className="relative w-4 rounded-full bg-gray-200 dark:bg-slate-800 h-20 overflow-hidden">
                         <div
-                          className="absolute bottom-0 w-full bg-linear-to-t from-amber-500 to-yellow-400 transition-all duration-300 rounded-full"
+                          className="absolute bottom-0 w-full bg-yellow-400 transition-all duration-300 rounded-full"
                           style={{ height: `${gasLevel}%` }}
                         ></div>
                       </div>
@@ -626,19 +626,19 @@ export default function DashboardContent() {
                   <div className="flex gap-1 w-full justify-center">
                     <button
                       onClick={() => handleSteer(-5)}
-                      className="rounded bg-gray-200 dark:bg-slate-800 px-2 py-0.5 text-[10px] font-bold hover:bg-amber-500 hover:text-black transition-colors cursor-pointer"
+                      className="rounded bg-gray-200 dark:bg-slate-800 px-2 py-0.5 text-[10px] font-bold text-gray-700 dark:text-slate-300 hover:bg-yellow-400 hover:text-slate-950 transition-colors cursor-pointer"
                     >
                       ◀
                     </button>
                     <button
                       onClick={() => setSteeringAngle(0)}
-                      className="rounded bg-gray-200 dark:bg-slate-800 px-2 py-0.5 text-[10px] font-bold hover:bg-gray-300 dark:hover:bg-slate-700 transition-colors cursor-pointer"
+                      className="rounded bg-gray-200 dark:bg-slate-800 px-2 py-0.5 text-[10px] font-bold text-gray-700 dark:text-slate-300 hover:bg-yellow-400 hover:text-slate-950 transition-colors cursor-pointer"
                     >
                       RESET
                     </button>
                     <button
                       onClick={() => handleSteer(5)}
-                      className="rounded bg-gray-200 dark:bg-slate-800 px-2 py-0.5 text-[10px] font-bold hover:bg-amber-500 hover:text-black transition-colors cursor-pointer"
+                      className="rounded bg-gray-200 dark:bg-slate-800 px-2 py-0.5 text-[10px] font-bold text-gray-700 dark:text-slate-300 hover:bg-yellow-400 hover:text-slate-950 transition-colors cursor-pointer"
                     >
                       ▶
                     </button>
@@ -665,8 +665,8 @@ export default function DashboardContent() {
                       onClick={() => setDriveMode("2WD")}
                       className={`flex-1 rounded-lg py-1 text-[10px] font-mono font-bold transition-all cursor-pointer ${
                         driveMode === "2WD"
-                          ? "bg-linear-to-r from-amber-400 via-yellow-500 to-amber-600 text-slate-950 shadow-md shadow-amber-500/20"
-                          : "bg-gray-200 dark:bg-slate-800 text-gray-700 dark:text-slate-300 hover:bg-amber-500/20 hover:text-amber-500"
+                          ? "bg-yellow-400 text-slate-950 shadow-xs"
+                          : "bg-gray-200 dark:bg-slate-800 text-gray-700 dark:text-slate-300 hover:bg-yellow-400/20 hover:text-yellow-600"
                       }`}
                     >
                       2WD (RWD)
@@ -676,8 +676,8 @@ export default function DashboardContent() {
                       onClick={() => setDriveMode("4WD")}
                       className={`flex-1 rounded-lg py-1 text-[10px] font-mono font-bold transition-all cursor-pointer ${
                         driveMode === "4WD"
-                          ? "bg-linear-to-r from-amber-400 via-yellow-500 to-amber-600 text-slate-950 shadow-md shadow-amber-500/20"
-                          : "bg-gray-200 dark:bg-slate-800 text-gray-700 dark:text-slate-300 hover:bg-amber-500/20 hover:text-amber-500"
+                          ? "bg-yellow-400 text-slate-950 shadow-xs"
+                          : "bg-gray-200 dark:bg-slate-800 text-gray-700 dark:text-slate-300 hover:bg-yellow-400/20 hover:text-yellow-600"
                       }`}
                     >
                       4WD (4x4)
@@ -830,7 +830,7 @@ export default function DashboardContent() {
 
                 {/* Level indicator bar */}
                 <div className="h-2 w-full rounded-full bg-gray-200 dark:bg-slate-800 overflow-hidden">
-                  <div className="h-full w-[94%] bg-linear-to-r from-amber-500 to-emerald-400 rounded-full"></div>
+                  <div className="h-full w-[94%] bg-yellow-400 rounded-full"></div>
                 </div>
 
                 <div className="flex justify-between text-[10px] font-mono text-slate-400 mt-2">

@@ -48,7 +48,7 @@ export default function SignIn() {
             </div>
           </div>
           <div className="mt-6">
-            <button className="btn w-full bg-linear-to-r from-amber-400 via-yellow-500 to-amber-600 text-slate-950 font-bold shadow-md shadow-amber-500/20 hover:brightness-105 transition-all">
+            <button className="btn w-full bg-yellow-400 text-slate-950 font-bold shadow-xs hover:bg-yellow-300 transition-all">
               Sign In
             </button>
           </div>
