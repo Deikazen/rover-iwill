@@ -2,21 +2,24 @@ import Link from "next/link";
 
 export default function Logo() {
   return (
-    <Link href="/" className="inline-flex" aria-label="Cruip">
-      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28">
+    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-br from-amber-400 via-yellow-500 to-amber-600 text-slate-950 font-black shadow-md shadow-amber-500/20">
+      <svg
+        className="h-6 w-6"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.5"
+      >
+        <circle cx="12" cy="12" r="3" fill="currentColor" />
         <path
-          className="fill-blue-500"
-          fillRule="evenodd"
-          d="M15.052 0c6.914.513 12.434 6.033 12.947 12.947h-5.015a7.932 7.932 0 0 1-7.932-7.932V0Zm-2.105 22.985V28C6.033 27.487.513 21.967 0 15.053h5.015a7.932 7.932 0 0 1 7.932 7.932Z"
-          clipRule="evenodd"
+          d="M6.343 17.657a8 8 0 0 1 0-11.314M17.657 6.343a8 8 0 0 1 0 11.314"
+          strokeLinecap="round"
         />
         <path
-          className="fill-blue-300"
-          fillRule="evenodd"
-          d="M0 12.947C.513 6.033 6.033.513 12.947 0v5.015a7.932 7.932 0 0 1-7.932 7.932H0Zm22.984 2.106h5.015C27.486 21.967 21.966 27.487 15.052 28v-5.015a7.932 7.932 0 0 1 7.932-7.932Z"
-          clipRule="evenodd"
+          d="M3.515 20.485a12 12 0 0 1 0-16.97M20.485 3.515a12 12 0 0 1 0 16.97"
+          strokeLinecap="round"
         />
       </svg>
-    </Link>
+    </div>
   );
 }

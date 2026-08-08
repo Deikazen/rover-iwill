@@ -18,7 +18,7 @@ export default function DashboardContent() {
   const [batteryVoltage, setBatteryVoltage] = useState<number>(24.2);
   const [cpuTemp, setCpuTemp] = useState<number>(42);
   const [currentTime, setCurrentTime] = useState<string>("15:42:18");
-  
+
   // Interactive Modals & Toasts
   const [isResynced, setIsResynced] = useState(false);
   const [showTerminateModal, setShowTerminateModal] = useState(false);
@@ -54,7 +54,13 @@ export default function DashboardContent() {
       if (!isTerminated) {
         setPing(20 + Math.floor(Math.random() * 7));
         setFps(29 + Math.floor(Math.random() * 3));
-        setSpeed((prev) => parseFloat((12 + (gasLevel / 100) * 8 + (Math.random() * 0.4 - 0.2)).toFixed(1)));
+        setSpeed((prev) =>
+          parseFloat(
+            (12 + (gasLevel / 100) * 8 + (Math.random() * 0.4 - 0.2)).toFixed(
+              1,
+            ),
+          ),
+        );
       }
     }, 1000);
 
@@ -66,7 +72,11 @@ export default function DashboardContent() {
     setIsResynced(true);
     const timeStr = new Date().toTimeString().split(" ")[0];
     setLogs((prev) => [
-      { time: timeStr, message: "Kanal telemetri berhasil di-resinkronisasi", type: "success" },
+      {
+        time: timeStr,
+        message: "Kanal telemetri berhasil di-resinkronisasi",
+        type: "success",
+      },
       ...prev,
     ]);
     setTimeout(() => setIsResynced(false), 2500);
@@ -79,7 +89,11 @@ export default function DashboardContent() {
     const timeStr = new Date().toTimeString().split(" ")[0];
     const direction = delta < 0 ? "kiri" : delta > 0 ? "kanan" : "tengah";
     setLogs((prev) => [
-      { time: timeStr, message: `Kemudi diatur ke ${newAngle}° (${direction})`, type: "action" },
+      {
+        time: timeStr,
+        message: `Kemudi diatur ke ${newAngle}° (${direction})`,
+        type: "action",
+      },
       ...prev,
     ]);
   };
@@ -92,12 +106,48 @@ export default function DashboardContent() {
 
   // Sensort Status Items
   const sensorList = [
-    { id: "cam_front", name: "KAMERA DEPAN", status: isTerminated ? "OFFLINE" : "OK", ok: !isTerminated, icon: "📹" },
-    { id: "cam_rear", name: "KAMERA BELAKANG", status: isTerminated ? "OFFLINE" : "OK", ok: !isTerminated, icon: "🎥" },
-    { id: "lidar", name: "LIDAR", status: isTerminated ? "OFFLINE" : "OK", ok: !isTerminated, icon: "📡" },
-    { id: "gps", name: "GPS", status: isTerminated ? "OFFLINE" : "OK", ok: !isTerminated, icon: "📍" },
-    { id: "esp32", name: "ESP32 CORE", status: isTerminated ? "ERROR" : "OK", ok: !isTerminated, icon: "🔳" },
-    { id: "motor", name: "MOTOR DRIVER", status: isTerminated ? "OFFLINE" : "OK", ok: !isTerminated, icon: "⚡" },
+    {
+      id: "cam_front",
+      name: "KAMERA DEPAN",
+      status: isTerminated ? "OFFLINE" : "OK",
+      ok: !isTerminated,
+      icon: "📹",
+    },
+    {
+      id: "cam_rear",
+      name: "KAMERA BELAKANG",
+      status: isTerminated ? "OFFLINE" : "OK",
+      ok: !isTerminated,
+      icon: "🎥",
+    },
+    {
+      id: "lidar",
+      name: "LIDAR",
+      status: isTerminated ? "OFFLINE" : "OK",
+      ok: !isTerminated,
+      icon: "📡",
+    },
+    {
+      id: "gps",
+      name: "GPS",
+      status: isTerminated ? "OFFLINE" : "OK",
+      ok: !isTerminated,
+      icon: "📍",
+    },
+    {
+      id: "esp32",
+      name: "ESP32 CORE",
+      status: isTerminated ? "ERROR" : "OK",
+      ok: !isTerminated,
+      icon: "🔳",
+    },
+    {
+      id: "motor",
+      name: "MOTOR DRIVER",
+      status: isTerminated ? "OFFLINE" : "OK",
+      ok: !isTerminated,
+      icon: "⚡",
+    },
   ];
 
   // Dark/Light Theme class helper
@@ -105,52 +155,44 @@ export default function DashboardContent() {
   const cardBgClass = isDark
     ? "bg-slate-900/90 border-slate-800 text-white shadow-xl shadow-black/20"
     : "bg-white/80 border-gray-200/80 text-gray-900 shadow-xs backdrop-blur-md";
-  
+
   const textSubClass = isDark ? "text-slate-400" : "text-gray-500";
-  const innerCardClass = isDark ? "bg-slate-950/80 border-slate-800/80" : "bg-gray-50/80 border-gray-200/60";
+  const innerCardClass = isDark
+    ? "bg-slate-950/80 border-slate-800/80"
+    : "bg-gray-50/80 border-gray-200/60";
 
   return (
-    <section className={`relative min-h-screen overflow-hidden pt-24 pb-16 transition-colors duration-300 md:pt-28 md:pb-24 ${isDark ? "bg-slate-950 text-slate-100" : "bg-gray-50 text-gray-900"}`}>
+    <section
+      className={`relative min-h-screen overflow-hidden pt-24 pb-16 transition-colors duration-300 md:pt-28 md:pb-24 ${isDark ? "bg-slate-950 text-slate-100" : "bg-gray-50 text-gray-900"}`}
+    >
       <PageIllustration />
 
       <div className="mx-auto max-w-7xl px-3 sm:px-5 lg:px-6">
-        
         {/* ========================================================================= */}
         {/* HEADER TELEMETRY BAR */}
         {/* ========================================================================= */}
-        <div className={`mb-6 rounded-2xl border p-4 backdrop-blur-md transition-all ${cardBgClass}`}>
+        <div
+          className={`mb-6 rounded-2xl border p-4 backdrop-blur-md transition-all ${cardBgClass}`}
+        >
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            
             {/* Logo & Connection Status */}
             <div className="flex flex-wrap items-center gap-3">
-              <div className="flex items-center gap-2.5">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-br from-amber-400 via-yellow-500 to-amber-600 text-slate-950 font-black shadow-md shadow-amber-500/20">
-                  <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <circle cx="12" cy="12" r="3" fill="currentColor" />
-                    <path d="M6.343 17.657a8 8 0 0 1 0-11.314M17.657 6.343a8 8 0 0 1 0 11.314" strokeLinecap="round" />
-                    <path d="M3.515 20.485a12 12 0 0 1 0-16.97M20.485 3.515a12 12 0 0 1 0 16.97" strokeLinecap="round" />
-                  </svg>
-                </div>
-                <div>
-                  <h1 className="text-base font-black tracking-wider uppercase font-mono leading-none">
-                    R.O.V.E.R
-                  </h1>
-                  <span className="text-[10px] font-bold tracking-widest text-amber-500 uppercase">
-                    PRO TELEMETRY
-                  </span>
-                </div>
-              </div>
-
-              <div className="h-6 w-px bg-gray-300 dark:bg-slate-800 hidden sm:block"></div>
+              <div className="flex items-center gap-2.5"></div>
 
               {/* Status Badge */}
-              <div className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold ${
-                isTerminated
-                  ? "border-red-500/30 bg-red-500/10 text-red-600 dark:text-red-400"
-                  : "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-              }`}>
-                <span className={`h-2 w-2 rounded-full ${isTerminated ? "bg-red-500 animate-ping" : "bg-emerald-500 animate-pulse"}`}></span>
-                <span className="font-mono uppercase">{isTerminated ? "DISCONNECTED" : "CONNECTED"}</span>
+              <div
+                className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold ${
+                  isTerminated
+                    ? "border-red-500/30 bg-red-500/10 text-red-600 dark:text-red-400"
+                    : "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                }`}
+              >
+                <span
+                  className={`h-2 w-2 rounded-full ${isTerminated ? "bg-red-500 animate-ping" : "bg-emerald-500 animate-pulse"}`}
+                ></span>
+                <span className="font-mono uppercase">
+                  {isTerminated ? "DISCONNECTED" : "CONNECTED"}
+                </span>
               </div>
             </div>
 
@@ -158,12 +200,16 @@ export default function DashboardContent() {
             <div className="flex flex-wrap items-center gap-3 sm:gap-6 text-xs font-mono">
               <div className="flex items-center gap-2 rounded-xl border border-gray-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 px-3 py-1.5 shadow-2xs">
                 <span className={textSubClass}>IP ADDRESS</span>
-                <span className="font-bold text-blue-600 dark:text-blue-400">192.168.1.132</span>
+                <span className="font-bold text-blue-600 dark:text-blue-400">
+                  192.168.1.132
+                </span>
               </div>
 
               <div className="flex items-center gap-2 rounded-xl border border-gray-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 px-3 py-1.5 shadow-2xs">
                 <span className={textSubClass}>PING</span>
-                <span className="font-bold text-emerald-600 dark:text-emerald-400">{ping} ms</span>
+                <span className="font-bold text-emerald-600 dark:text-emerald-400">
+                  {ping} ms
+                </span>
               </div>
 
               <div className="flex items-center gap-2 rounded-xl border border-gray-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 px-3 py-1.5 shadow-2xs">
@@ -173,7 +219,9 @@ export default function DashboardContent() {
 
               <div className="flex items-center gap-2 rounded-xl border border-gray-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 px-3 py-1.5 shadow-2xs">
                 <span className={textSubClass}>TIME</span>
-                <span className="font-bold text-gray-900 dark:text-white font-mono">{currentTime}</span>
+                <span className="font-bold text-gray-900 dark:text-white font-mono">
+                  {currentTime}
+                </span>
               </div>
             </div>
 
@@ -184,7 +232,9 @@ export default function DashboardContent() {
                 type="button"
                 onClick={() => setThemeMode(isDark ? "light" : "dark")}
                 className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition-all cursor-pointer shadow-xs"
-                title={isDark ? "Switch to Light Theme" : "Switch to Dark Theme"}
+                title={
+                  isDark ? "Switch to Light Theme" : "Switch to Dark Theme"
+                }
               >
                 {isDark ? "☀️" : "🌙"}
               </button>
@@ -196,8 +246,18 @@ export default function DashboardContent() {
                 disabled={isResynced}
                 className="inline-flex items-center gap-1.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3.5 py-2 text-xs font-semibold text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition-all cursor-pointer shadow-xs"
               >
-                <svg className={`h-3.5 w-3.5 ${isResynced ? "animate-spin text-blue-600" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                <svg
+                  className={`h-3.5 w-3.5 ${isResynced ? "animate-spin text-blue-600" : ""}`}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                  />
                 </svg>
                 <span>{isResynced ? "RESYNCING..." : "RESYNC CHANNEL"}</span>
               </button>
@@ -208,20 +268,32 @@ export default function DashboardContent() {
                 onClick={() => setShowTerminateModal(true)}
                 className="inline-flex items-center gap-1.5 rounded-xl bg-linear-to-r from-red-600 to-rose-600 px-4 py-2 text-xs font-bold text-white shadow-md shadow-red-500/20 hover:from-red-700 hover:to-rose-700 transition-all cursor-pointer uppercase tracking-wider"
               >
-                <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                <svg
+                  className="h-3.5 w-3.5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2.5"
+                    d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
+                  />
                 </svg>
                 <span>{isTerminated ? "RESTART" : "TERMINATE"}</span>
               </button>
             </div>
-
           </div>
         </div>
 
         {/* Resync Toast Notification */}
         {isResynced && (
           <div className="mb-6 rounded-xl bg-blue-500/10 border border-blue-500/30 p-3 text-xs text-blue-600 dark:text-blue-400 flex items-center justify-between animate-fade-in font-mono">
-            <span>⚡ Telemetry channel resynchronized with rover unit (0 dropouts detected).</span>
+            <span>
+              ⚡ Telemetry channel resynchronized with rover unit (0 dropouts
+              detected).
+            </span>
             <span className="font-bold">OK</span>
           </div>
         )}
@@ -230,9 +302,10 @@ export default function DashboardContent() {
         {/* ROW 1: KAMERA DEPAN | SCAN LIDAR (2D) | KAMERA BELAKANG */}
         {/* ========================================================================= */}
         <div className="mb-6 grid gap-5 md:grid-cols-3">
-          
           {/* 1. KAMERA DEPAN */}
-          <div className={`flex flex-col overflow-hidden rounded-2xl border backdrop-blur-md transition-all ${cardBgClass}`}>
+          <div
+            className={`flex flex-col overflow-hidden rounded-2xl border backdrop-blur-md transition-all ${cardBgClass}`}
+          >
             <div className="flex items-center justify-between border-b border-gray-100 dark:border-slate-800/80 px-4 py-3">
               <h2 className="text-xs font-bold uppercase tracking-wider font-mono flex items-center gap-2">
                 <span>KAMERA DEPAN</span>
@@ -251,7 +324,7 @@ export default function DashboardContent() {
                 className="object-cover transition-opacity duration-300"
                 priority
               />
-              
+
               {/* HUD Reticle Overlay */}
               <div className="absolute inset-0 pointer-events-none flex flex-col justify-between p-3">
                 <div className="flex justify-between items-start">
@@ -285,7 +358,9 @@ export default function DashboardContent() {
           </div>
 
           {/* 2. SCAN LIDAR (2D) */}
-          <div className={`flex flex-col overflow-hidden rounded-2xl border backdrop-blur-md transition-all ${cardBgClass}`}>
+          <div
+            className={`flex flex-col overflow-hidden rounded-2xl border backdrop-blur-md transition-all ${cardBgClass}`}
+          >
             <div className="flex items-center justify-between border-b border-gray-100 dark:border-slate-800/80 px-4 py-3">
               <h2 className="text-xs font-bold uppercase tracking-wider font-mono flex items-center gap-2">
                 <span>SCAN LIDAR (2D)</span>
@@ -297,9 +372,10 @@ export default function DashboardContent() {
             </div>
 
             {/* Radar Circle Visualizer */}
-            <div className={`relative aspect-video w-full flex items-center justify-center overflow-hidden p-2 ${innerCardClass}`}>
+            <div
+              className={`relative aspect-video w-full flex items-center justify-center overflow-hidden p-2 ${innerCardClass}`}
+            >
               <div className="relative h-44 w-44 rounded-full border border-emerald-500/30 bg-slate-950 flex items-center justify-center shadow-inner shadow-emerald-500/10">
-                
                 {/* Concentric rings */}
                 <div className="absolute h-36 w-36 rounded-full border border-dashed border-emerald-500/20"></div>
                 <div className="absolute h-28 w-28 rounded-full border border-emerald-500/20"></div>
@@ -313,16 +389,34 @@ export default function DashboardContent() {
                 </div>
 
                 {/* Radial Distance Labels */}
-                <span className="absolute top-1 text-[9px] font-mono text-emerald-500/80 font-bold">N</span>
-                <span className="absolute bottom-1 text-[9px] font-mono text-emerald-500/80 font-bold">S</span>
-                <span className="absolute left-1 text-[9px] font-mono text-emerald-500/80 font-bold">W</span>
-                <span className="absolute right-1 text-[9px] font-mono text-emerald-500/80 font-bold">E</span>
-                
-                <span className="absolute top-7 right-3 text-[7px] font-mono text-slate-500">5 m</span>
-                <span className="absolute top-11 right-5 text-[7px] font-mono text-slate-500">4 m</span>
-                <span className="absolute top-14 right-7 text-[7px] font-mono text-slate-500">3 m</span>
-                <span className="absolute top-16 right-9 text-[7px] font-mono text-slate-500">2 m</span>
-                <span className="absolute top-18 right-11 text-[7px] font-mono text-slate-500">1 m</span>
+                <span className="absolute top-1 text-[9px] font-mono text-emerald-500/80 font-bold">
+                  N
+                </span>
+                <span className="absolute bottom-1 text-[9px] font-mono text-emerald-500/80 font-bold">
+                  S
+                </span>
+                <span className="absolute left-1 text-[9px] font-mono text-emerald-500/80 font-bold">
+                  W
+                </span>
+                <span className="absolute right-1 text-[9px] font-mono text-emerald-500/80 font-bold">
+                  E
+                </span>
+
+                <span className="absolute top-7 right-3 text-[7px] font-mono text-slate-500">
+                  5 m
+                </span>
+                <span className="absolute top-11 right-5 text-[7px] font-mono text-slate-500">
+                  4 m
+                </span>
+                <span className="absolute top-14 right-7 text-[7px] font-mono text-slate-500">
+                  3 m
+                </span>
+                <span className="absolute top-16 right-9 text-[7px] font-mono text-slate-500">
+                  2 m
+                </span>
+                <span className="absolute top-18 right-11 text-[7px] font-mono text-slate-500">
+                  1 m
+                </span>
 
                 {/* Center Rover Icon */}
                 <div className="z-10 flex h-5 w-5 items-center justify-center rounded-md bg-amber-500 text-[10px] font-bold text-slate-950 shadow-xs">
@@ -349,7 +443,9 @@ export default function DashboardContent() {
           </div>
 
           {/* 3. KAMERA BELAKANG */}
-          <div className={`flex flex-col overflow-hidden rounded-2xl border backdrop-blur-md transition-all ${cardBgClass}`}>
+          <div
+            className={`flex flex-col overflow-hidden rounded-2xl border backdrop-blur-md transition-all ${cardBgClass}`}
+          >
             <div className="flex items-center justify-between border-b border-gray-100 dark:border-slate-800/80 px-4 py-3">
               <h2 className="text-xs font-bold uppercase tracking-wider font-mono flex items-center gap-2">
                 <span>KAMERA BELAKANG</span>
@@ -382,9 +478,25 @@ export default function DashboardContent() {
                 {/* Trajectory Guide Lines */}
                 <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-3/4 h-20 opacity-40">
                   <svg className="w-full h-full" viewBox="0 0 100 50">
-                    <polygon points="10,48 25,10 75,10 90,48" fill="none" stroke="#ef4444" strokeWidth="1.5" strokeDasharray="3 2" />
-                    <polygon points="15,48 28,18 72,18 85,48" fill="none" stroke="#eab308" strokeWidth="1.5" />
-                    <polygon points="20,48 32,26 68,26 80,48" fill="none" stroke="#22c55e" strokeWidth="1.5" />
+                    <polygon
+                      points="10,48 25,10 75,10 90,48"
+                      fill="none"
+                      stroke="#ef4444"
+                      strokeWidth="1.5"
+                      strokeDasharray="3 2"
+                    />
+                    <polygon
+                      points="15,48 28,18 72,18 85,48"
+                      fill="none"
+                      stroke="#eab308"
+                      strokeWidth="1.5"
+                    />
+                    <polygon
+                      points="20,48 32,26 68,26 80,48"
+                      fill="none"
+                      stroke="#22c55e"
+                      strokeWidth="1.5"
+                    />
                   </svg>
                 </div>
 
@@ -399,28 +511,28 @@ export default function DashboardContent() {
               </div>
             </div>
           </div>
-
         </div>
 
         {/* ========================================================================= */}
         {/* ROW 2: KONTROL KENDALI | TELEMETRI | NAVIGASI GPS */}
         {/* ========================================================================= */}
         <div className="mb-6 grid gap-5 md:grid-cols-3">
-
           {/* 1. KONTROL KENDALI */}
-          <div className={`flex flex-col justify-between rounded-2xl border p-5 backdrop-blur-md transition-all ${cardBgClass}`}>
+          <div
+            className={`flex flex-col justify-between rounded-2xl border p-5 backdrop-blur-md transition-all ${cardBgClass}`}
+          >
             <h2 className="mb-4 text-xs font-bold uppercase tracking-wider font-mono">
               KONTROL KENDALI
             </h2>
 
             <div className="grid gap-4">
-              
               {/* Pedals & Steering Grid */}
               <div className="grid grid-cols-2 gap-3">
-                
                 {/* Pedal Section */}
                 <div className={`rounded-xl border p-3 ${innerCardClass}`}>
-                  <span className={`block text-[10px] font-bold uppercase font-mono mb-2 text-center ${textSubClass}`}>
+                  <span
+                    className={`block text-[10px] font-bold uppercase font-mono mb-2 text-center ${textSubClass}`}
+                  >
                     PEDAL
                   </span>
 
@@ -433,8 +545,12 @@ export default function DashboardContent() {
                           style={{ height: `${koplingLevel}%` }}
                         ></div>
                       </div>
-                      <span className="text-[9px] font-mono font-semibold">KOPLING</span>
-                      <span className="text-[9px] font-mono font-bold text-blue-500">{koplingLevel}%</span>
+                      <span className="text-[9px] font-mono font-semibold">
+                        KOPLING
+                      </span>
+                      <span className="text-[9px] font-mono font-bold text-blue-500">
+                        {koplingLevel}%
+                      </span>
                     </div>
 
                     {/* Rem */}
@@ -445,8 +561,12 @@ export default function DashboardContent() {
                           style={{ height: `${remLevel}%` }}
                         ></div>
                       </div>
-                      <span className="text-[9px] font-mono font-semibold">REM</span>
-                      <span className="text-[9px] font-mono font-bold text-red-500">{remLevel}%</span>
+                      <span className="text-[9px] font-mono font-semibold">
+                        REM
+                      </span>
+                      <span className="text-[9px] font-mono font-bold text-red-500">
+                        {remLevel}%
+                      </span>
                     </div>
 
                     {/* Gas */}
@@ -457,8 +577,12 @@ export default function DashboardContent() {
                           style={{ height: `${gasLevel}%` }}
                         ></div>
                       </div>
-                      <span className="text-[9px] font-mono font-semibold">GAS</span>
-                      <span className="text-[9px] font-mono font-bold text-amber-500">{gasLevel}%</span>
+                      <span className="text-[9px] font-mono font-semibold">
+                        GAS
+                      </span>
+                      <span className="text-[9px] font-mono font-bold text-amber-500">
+                        {gasLevel}%
+                      </span>
                     </div>
                   </div>
 
@@ -476,8 +600,12 @@ export default function DashboardContent() {
                 </div>
 
                 {/* Steering Wheel Gauge */}
-                <div className={`flex flex-col items-center justify-between rounded-xl border p-3 ${innerCardClass}`}>
-                  <span className={`block text-[10px] font-bold uppercase font-mono text-center ${textSubClass}`}>
+                <div
+                  className={`flex flex-col items-center justify-between rounded-xl border p-3 ${innerCardClass}`}
+                >
+                  <span
+                    className={`block text-[10px] font-bold uppercase font-mono text-center ${textSubClass}`}
+                  >
                     SETIR KEMUDI
                   </span>
 
@@ -520,14 +648,15 @@ export default function DashboardContent() {
                     SUDUT: {steeringAngle}°
                   </span>
                 </div>
-
               </div>
 
               {/* Mode Berkendara & Drivetrain */}
               <div className="grid grid-cols-2 gap-3">
                 {/* Mode Select */}
                 <div className={`rounded-xl border p-2.5 ${innerCardClass}`}>
-                  <span className={`block text-[10px] font-bold uppercase font-mono mb-2 ${textSubClass}`}>
+                  <span
+                    className={`block text-[10px] font-bold uppercase font-mono mb-2 ${textSubClass}`}
+                  >
                     MODE BERKENDARA
                   </span>
                   <div className="flex gap-1.5">
@@ -559,7 +688,9 @@ export default function DashboardContent() {
                 {/* Status Penggerak */}
                 <div className={`rounded-xl border p-2.5 ${innerCardClass}`}>
                   <div className="flex justify-between items-center mb-1.5">
-                    <span className={`text-[10px] font-bold uppercase font-mono ${textSubClass}`}>
+                    <span
+                      className={`text-[10px] font-bold uppercase font-mono ${textSubClass}`}
+                    >
                       PENGGERAK
                     </span>
                     <span className="rounded bg-amber-500/20 text-amber-500 text-[9px] font-bold font-mono px-1.5 py-0.5">
@@ -567,25 +698,37 @@ export default function DashboardContent() {
                     </span>
                   </div>
                   <div className="grid grid-cols-2 gap-1 text-[9px] font-mono">
-                    <div className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span> FL</div>
-                    <div className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span> FR</div>
-                    <div className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span> RL</div>
-                    <div className="flex items-center gap-1"><span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span> RR</div>
+                    <div className="flex items-center gap-1">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>{" "}
+                      FL
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>{" "}
+                      FR
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>{" "}
+                      RL
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>{" "}
+                      RR
+                    </div>
                   </div>
                 </div>
               </div>
-
             </div>
           </div>
 
           {/* 2. TELEMETRI */}
-          <div className={`flex flex-col justify-between rounded-2xl border p-5 backdrop-blur-md transition-all ${cardBgClass}`}>
+          <div
+            className={`flex flex-col justify-between rounded-2xl border p-5 backdrop-blur-md transition-all ${cardBgClass}`}
+          >
             <h2 className="mb-4 text-xs font-bold uppercase tracking-wider font-mono">
               TELEMETRI
             </h2>
 
             <div className="space-y-4">
-              
               {/* Kecepatan */}
               <div className={`rounded-xl border p-3 ${innerCardClass}`}>
                 <div className="flex items-center justify-between">
@@ -593,16 +736,28 @@ export default function DashboardContent() {
                     <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-500/10 text-amber-500">
                       ⏱
                     </span>
-                    <span className={`text-xs font-bold font-mono ${textSubClass}`}>KECEPATAN</span>
+                    <span
+                      className={`text-xs font-bold font-mono ${textSubClass}`}
+                    >
+                      KECEPATAN
+                    </span>
                   </div>
                   <div className="text-right">
-                    <span className="text-2xl font-black font-mono text-amber-500">{speed}</span>
-                    <span className="ml-1 text-xs font-mono text-slate-400">km/h</span>
+                    <span className="text-2xl font-black font-mono text-amber-500">
+                      {speed}
+                    </span>
+                    <span className="ml-1 text-xs font-mono text-slate-400">
+                      km/h
+                    </span>
                   </div>
                 </div>
                 {/* Speed Sparkline area graph */}
                 <div className="mt-2 h-8 w-full">
-                  <svg className="w-full h-full" viewBox="0 0 100 25" preserveAspectRatio="none">
+                  <svg
+                    className="w-full h-full"
+                    viewBox="0 0 100 25"
+                    preserveAspectRatio="none"
+                  >
                     <path
                       d="M0,20 Q15,10 30,18 T60,8 T90,15 L100,12 L100,25 L0,25 Z"
                       className="fill-amber-500/20"
@@ -624,16 +779,28 @@ export default function DashboardContent() {
                     <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-500/10 text-blue-500">
                       🧭
                     </span>
-                    <span className={`text-xs font-bold font-mono ${textSubClass}`}>SUDUT</span>
+                    <span
+                      className={`text-xs font-bold font-mono ${textSubClass}`}
+                    >
+                      SUDUT
+                    </span>
                   </div>
                   <div className="text-right">
-                    <span className="text-2xl font-black font-mono text-blue-500">{steeringAngle}°</span>
-                    <span className="ml-1 text-xs font-mono text-slate-400">deg</span>
+                    <span className="text-2xl font-black font-mono text-blue-500">
+                      {steeringAngle}°
+                    </span>
+                    <span className="ml-1 text-xs font-mono text-slate-400">
+                      deg
+                    </span>
                   </div>
                 </div>
                 {/* Angle Sparkline area graph */}
                 <div className="mt-2 h-8 w-full">
-                  <svg className="w-full h-full" viewBox="0 0 100 25" preserveAspectRatio="none">
+                  <svg
+                    className="w-full h-full"
+                    viewBox="0 0 100 25"
+                    preserveAspectRatio="none"
+                  >
                     <path
                       d="M0,15 Q20,22 40,12 T80,18 L100,14 L100,25 L0,25 Z"
                       className="fill-blue-500/20"
@@ -651,7 +818,11 @@ export default function DashboardContent() {
               {/* Signal RX/TX */}
               <div className={`rounded-xl border p-3 ${innerCardClass}`}>
                 <div className="flex items-center justify-between mb-2">
-                  <span className={`text-xs font-bold font-mono ${textSubClass}`}>SIGNAL RX/TX</span>
+                  <span
+                    className={`text-xs font-bold font-mono ${textSubClass}`}
+                  >
+                    SIGNAL RX/TX
+                  </span>
                   <span className="rounded bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 text-[10px] font-bold font-mono px-2 py-0.5">
                     STABIL
                   </span>
@@ -667,12 +838,13 @@ export default function DashboardContent() {
                   <span>LOSS: 0.02%</span>
                 </div>
               </div>
-
             </div>
           </div>
 
           {/* 3. NAVIGASI GPS */}
-          <div className={`flex flex-col justify-between rounded-2xl border p-5 backdrop-blur-md transition-all ${cardBgClass}`}>
+          <div
+            className={`flex flex-col justify-between rounded-2xl border p-5 backdrop-blur-md transition-all ${cardBgClass}`}
+          >
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-xs font-bold uppercase tracking-wider font-mono">
                 NAVIGASI GPS
@@ -716,36 +888,43 @@ export default function DashboardContent() {
             </div>
 
             {/* Bottom GPS Coordinates */}
-            <div className={`mt-3 grid grid-cols-2 gap-2 rounded-xl border p-2.5 text-[10px] font-mono ${innerCardClass}`}>
+            <div
+              className={`mt-3 grid grid-cols-2 gap-2 rounded-xl border p-2.5 text-[10px] font-mono ${innerCardClass}`}
+            >
               <div>
                 <span className={`block ${textSubClass}`}>LATITUDO</span>
-                <span className="font-bold text-gray-900 dark:text-slate-200">-6.9141234</span>
+                <span className="font-bold text-gray-900 dark:text-slate-200">
+                  -6.9141234
+                </span>
               </div>
               <div>
                 <span className={`block ${textSubClass}`}>LONGITUDO</span>
-                <span className="font-bold text-gray-900 dark:text-slate-200">107.6094321</span>
+                <span className="font-bold text-gray-900 dark:text-slate-200">
+                  107.6094321
+                </span>
               </div>
               <div>
                 <span className={`block ${textSubClass}`}>ARAH</span>
-                <span className="font-bold text-gray-900 dark:text-slate-200">128°</span>
+                <span className="font-bold text-gray-900 dark:text-slate-200">
+                  128°
+                </span>
               </div>
               <div>
                 <span className={`block ${textSubClass}`}>KEC. GPS</span>
                 <span className="font-bold text-amber-500">{speed} km/h</span>
               </div>
             </div>
-
           </div>
-
         </div>
 
         {/* ========================================================================= */}
         {/* ROW 3: STATUS SENSOR | LOG MISI */}
         {/* ========================================================================= */}
         <div className="grid gap-5 lg:grid-cols-12">
-          
           {/* STATUS SENSOR (5 Cols) */}
-          <div className={`lg:col-span-5 flex flex-col justify-between rounded-2xl border p-5 backdrop-blur-md transition-all ${cardBgClass}`}>
+          <div
+            className={`lg:col-span-5 flex flex-col justify-between rounded-2xl border p-5 backdrop-blur-md transition-all ${cardBgClass}`}
+          >
             <h2 className="mb-4 text-xs font-bold uppercase tracking-wider font-mono">
               STATUS SENSOR
             </h2>
@@ -762,10 +941,16 @@ export default function DashboardContent() {
                     {sensor.icon}
                   </div>
                   <div>
-                    <h3 className="text-[11px] font-bold font-mono leading-tight">{sensor.name}</h3>
+                    <h3 className="text-[11px] font-bold font-mono leading-tight">
+                      {sensor.name}
+                    </h3>
                     <div className="flex items-center gap-1 mt-0.5">
-                      <span className={`h-1.5 w-1.5 rounded-full ${sensor.ok ? "bg-emerald-500" : "bg-red-500"}`}></span>
-                      <span className={`text-[10px] font-mono font-bold ${sensor.ok ? "text-emerald-500" : "text-red-500"}`}>
+                      <span
+                        className={`h-1.5 w-1.5 rounded-full ${sensor.ok ? "bg-emerald-500" : "bg-red-500"}`}
+                      ></span>
+                      <span
+                        className={`text-[10px] font-mono font-bold ${sensor.ok ? "text-emerald-500" : "text-red-500"}`}
+                      >
                         {sensor.status}
                       </span>
                     </div>
@@ -776,45 +961,72 @@ export default function DashboardContent() {
 
             {selectedSensor && (
               <div className="mt-3 rounded-lg bg-amber-500/10 border border-amber-500/30 p-2.5 text-[11px] font-mono text-amber-600 dark:text-amber-400 flex items-center justify-between">
-                <span>Diagnostic check requested for {selectedSensor}... Status nominal.</span>
-                <button onClick={() => setSelectedSensor(null)} className="font-bold">✕</button>
+                <span>
+                  Diagnostic check requested for {selectedSensor}... Status
+                  nominal.
+                </span>
+                <button
+                  onClick={() => setSelectedSensor(null)}
+                  className="font-bold"
+                >
+                  ✕
+                </button>
               </div>
             )}
           </div>
 
           {/* LOG MISI (7 Cols) */}
-          <div className={`lg:col-span-7 flex flex-col justify-between rounded-2xl border p-5 backdrop-blur-md transition-all ${cardBgClass}`}>
+          <div
+            className={`lg:col-span-7 flex flex-col justify-between rounded-2xl border p-5 backdrop-blur-md transition-all ${cardBgClass}`}
+          >
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-xs font-bold uppercase tracking-wider font-mono">
                 LOG MISI
               </h2>
-              <span className="text-[10px] font-mono text-slate-400">REAL-TIME TELEMETRY STREAM</span>
+              <span className="text-[10px] font-mono text-slate-400">
+                REAL-TIME TELEMETRY STREAM
+              </span>
             </div>
 
             {/* Mission Log Box */}
-            <div className={`h-48 overflow-y-auto rounded-xl border p-3 font-mono text-xs space-y-2 scrollbar-thin ${innerCardClass}`}>
+            <div
+              className={`h-48 overflow-y-auto rounded-xl border p-3 font-mono text-xs space-y-2 scrollbar-thin ${innerCardClass}`}
+            >
               {logs.map((log, index) => (
-                <div key={index} className="flex items-center gap-3 border-b border-gray-100 dark:border-slate-800/60 pb-1.5">
-                  <span className="font-bold text-amber-500 shrink-0">{log.time}</span>
-                  <span className={`truncate ${
-                    log.type === "warning" ? "text-red-500 dark:text-red-400" :
-                    log.type === "highlight" ? "text-blue-600 dark:text-blue-400 font-bold" :
-                    log.type === "success" ? "text-emerald-600 dark:text-emerald-400" :
-                    isDark ? "text-slate-300" : "text-gray-700"
-                  }`}>
+                <div
+                  key={index}
+                  className="flex items-center gap-3 border-b border-gray-100 dark:border-slate-800/60 pb-1.5"
+                >
+                  <span className="font-bold text-amber-500 shrink-0">
+                    {log.time}
+                  </span>
+                  <span
+                    className={`truncate ${
+                      log.type === "warning"
+                        ? "text-red-500 dark:text-red-400"
+                        : log.type === "highlight"
+                          ? "text-blue-600 dark:text-blue-400 font-bold"
+                          : log.type === "success"
+                            ? "text-emerald-600 dark:text-emerald-400"
+                            : isDark
+                              ? "text-slate-300"
+                              : "text-gray-700"
+                    }`}
+                  >
                     {log.message}
                   </span>
                 </div>
               ))}
             </div>
           </div>
-
         </div>
 
         {/* ========================================================================= */}
         {/* BOTTOM SYSTEM FOOTER BAR */}
         {/* ========================================================================= */}
-        <div className={`mt-6 rounded-2xl border px-4 py-3 text-xs font-mono backdrop-blur-md transition-all ${cardBgClass}`}>
+        <div
+          className={`mt-6 rounded-2xl border px-4 py-3 text-xs font-mono backdrop-blur-md transition-all ${cardBgClass}`}
+        >
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1.5">
@@ -830,7 +1042,9 @@ export default function DashboardContent() {
             <div className="flex flex-wrap items-center gap-4 text-[11px]">
               <div>
                 <span className={textSubClass}>TEGANGAN BATERAI: </span>
-                <span className="font-bold text-amber-500">{batteryVoltage}V</span>
+                <span className="font-bold text-amber-500">
+                  {batteryVoltage}V
+                </span>
               </div>
               <div>
                 <span className={textSubClass}>SUHU CPU: </span>
@@ -842,18 +1056,21 @@ export default function DashboardContent() {
             </div>
           </div>
         </div>
-
       </div>
 
       {/* Emergency Terminate Modal */}
       {showTerminateModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-fade-in">
-          <div className={`max-w-md w-full rounded-2xl border p-6 shadow-2xl ${cardBgClass}`}>
+          <div
+            className={`max-w-md w-full rounded-2xl border p-6 shadow-2xl ${cardBgClass}`}
+          >
             <h3 className="text-base font-bold font-mono text-red-500 flex items-center gap-2">
               ⚠️ KONFIRMASI TERMINASI MISI
             </h3>
             <p className="mt-2 text-xs font-mono text-gray-600 dark:text-slate-300">
-              Apakah Anda yakin ingin {isTerminated ? "menghubungkan ulang" : "memutuskan koneksi"} telemetri unit Rover?
+              Apakah Anda yakin ingin{" "}
+              {isTerminated ? "menghubungkan ulang" : "memutuskan koneksi"}{" "}
+              telemetri unit Rover?
             </p>
             <div className="mt-6 flex justify-end gap-3 font-mono text-xs">
               <button
@@ -868,7 +1085,13 @@ export default function DashboardContent() {
                   setShowTerminateModal(false);
                   const timeStr = new Date().toTimeString().split(" ")[0];
                   setLogs((prev) => [
-                    { time: timeStr, message: !isTerminated ? "Misi diterminasikan oleh operator" : "Koneksi rover dipulihkan", type: "warning" },
+                    {
+                      time: timeStr,
+                      message: !isTerminated
+                        ? "Misi diterminasikan oleh operator"
+                        : "Koneksi rover dipulihkan",
+                      type: "warning",
+                    },
                     ...prev,
                   ]);
                 }}
