@@ -11,7 +11,7 @@ export default function Navbar() {
     <header className="fixed top-2 z-30 w-full md:top-6">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         {/* Container Glassmorphism */}
-        <div className="relative flex h-14 items-center justify-between gap-3 rounded-2xl border border-slate-800 bg-slate-900/80 px-4 shadow-xl shadow-black/20 backdrop-blur-md transition-all">
+        <div className="relative flex h-14 items-center justify-between gap-3 rounded-2xl  bg-white-900/80 px-4 shadow-xl shadow-black/20 backdrop-blur-md transition-all">
           {/* Site branding */}
           <div className="flex items-center gap-2.5">
             <Logo />
@@ -52,4 +52,3 @@ export default function Navbar() {
     </header>
   );
 }
-
