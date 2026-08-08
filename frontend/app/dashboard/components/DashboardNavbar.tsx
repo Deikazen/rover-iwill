@@ -12,7 +12,7 @@ import {
   Video,
   Sliders,
   Settings,
-  HelpCircle
+  HelpCircle,
 } from "lucide-react";
 
 interface DashboardNavbarProps {
@@ -32,21 +32,23 @@ export default function DashboardNavbar({
   isConnected,
   isTerminated,
   onTerminate,
-  onResync
+  onResync,
 }: DashboardNavbarProps) {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [showDummyNotice, setShowDummyNotice] = useState<string | null>(null);
 
   const navItems = [
     { id: "home", label: "Home", href: "/landing", icon: Home, isReal: true },
-    { id: "dashboard", label: "Dashboard", href: "/dashboard", icon: LayoutDashboard, isReal: true },
-    { id: "misi", label: "Misi & Waypoint", href: "#", icon: MapPin, isReal: false },
-    { id: "arsip", label: "Arsip Kamera", href: "#", icon: Video, isReal: false },
-    { id: "kalibrasi", label: "Kalibrasi Sensor", href: "#", icon: Sliders, isReal: false },
-    { id: "settings", label: "Pengaturan Rover", href: "#", icon: Settings, isReal: false }
+    {
+      id: "dashboard",
+      label: "Dashboard",
+      href: "/dashboard",
+      icon: LayoutDashboard,
+      isReal: true,
+    },
   ];
 
-  const handleNavClick = (item: typeof navItems[0]) => {
+  const handleNavClick = (item: (typeof navItems)[0]) => {
     if (!item.isReal) {
       setShowDummyNotice(item.label);
       setTimeout(() => setShowDummyNotice(null), 3000);
@@ -139,13 +141,17 @@ export default function DashboardNavbar({
             <span className="text-[9px] text-slate-500 uppercase font-semibold block tracking-wider">
               IP ADDRESS
             </span>
-            <span className="text-white font-bold text-[11px]">192.168.1.132</span>
+            <span className="text-white font-bold text-[11px]">
+              192.168.1.132
+            </span>
           </div>
           <div>
             <span className="text-[9px] text-slate-500 uppercase font-semibold block tracking-wider">
               PING
             </span>
-            <span className="text-emerald-400 font-bold text-[11px]">{ping} ms</span>
+            <span className="text-emerald-400 font-bold text-[11px]">
+              {ping} ms
+            </span>
           </div>
           <div>
             <span className="text-[9px] text-slate-500 uppercase font-semibold block tracking-wider">
