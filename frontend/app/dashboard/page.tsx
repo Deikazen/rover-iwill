@@ -1,3 +1,10 @@
+import Navbar from "@/components/ui/navbar";
+
 export default function Dasboard() {
-  return "Hello From Dashboard";
+  return (
+    <>
+      <Navbar />
+      <h1>Hello From Dashboard</h1>
+    </>
+  );
 }
