@@ -22,42 +22,42 @@ export default function HeroHome() {
             >
               <div className="-mx-0.5 flex justify-center -space-x-3">
                 <Image
-                  className="box-content rounded-full border-2 border-gray-50"
+                  className="box-content rounded-full border-2 border-slate-900"
                   src={Avatar01}
                   width={32}
                   height={32}
                   alt="Avatar 01"
                 />
                 <Image
-                  className="box-content rounded-full border-2 border-gray-50"
+                  className="box-content rounded-full border-2 border-slate-900"
                   src={Avatar02}
                   width={32}
                   height={32}
                   alt="Avatar 01"
                 />
                 <Image
-                  className="box-content rounded-full border-2 border-gray-50"
+                  className="box-content rounded-full border-2 border-slate-900"
                   src={Avatar03}
                   width={32}
                   height={32}
                   alt="Avatar 02"
                 />
                 <Image
-                  className="box-content rounded-full border-2 border-gray-50"
+                  className="box-content rounded-full border-2 border-slate-900"
                   src={Avatar04}
                   width={32}
                   height={32}
                   alt="Avatar 03"
                 />
                 <Image
-                  className="box-content rounded-full border-2 border-gray-50"
+                  className="box-content rounded-full border-2 border-slate-900"
                   src={Avatar05}
                   width={32}
                   height={32}
                   alt="Avatar 04"
                 />
                 <Image
-                  className="box-content rounded-full border-2 border-gray-50"
+                  className="box-content rounded-full border-2 border-slate-900"
                   src={Avatar06}
                   width={32}
                   height={32}
@@ -66,7 +66,7 @@ export default function HeroHome() {
               </div>
             </div>
             <h1
-              className="mb-6 border-y text-5xl font-bold [border-image:linear-gradient(to_right,transparent,--theme(--color-slate-300/.8),transparent)1] md:text-6xl"
+              className="mb-6 border-y text-5xl font-bold text-white [border-image:linear-gradient(to_right,transparent,--theme(--color-slate-800),transparent)1] md:text-6xl"
               data-aos="zoom-y-out"
               data-aos-delay={150}
             >
@@ -75,14 +75,14 @@ export default function HeroHome() {
             </h1>
             <div className="mx-auto max-w-3xl">
               <p
-                className="mb-8 text-lg text-gray-700"
+                className="mb-8 text-lg text-slate-300"
                 data-aos="zoom-y-out"
                 data-aos-delay={300}
               >
                 Simple is a modern website builder powered by AI that changes
                 how companies create user interfaces together.
               </p>
-              <div className="relative before:absolute before:inset-0 before:border-y before:[border-image:linear-gradient(to_right,transparent,--theme(--color-slate-300/.8),transparent)1]">
+              <div className="relative before:absolute before:inset-0 before:border-y before:[border-image:linear-gradient(to_right,transparent,--theme(--color-slate-800),transparent)1]">
                 <div
                   className="mx-auto max-w-xs sm:flex sm:max-w-none sm:justify-center"
                   data-aos="zoom-y-out"
@@ -100,7 +100,7 @@ export default function HeroHome() {
                     </span>
                   </a>
                   <a
-                    className="btn w-full bg-white text-gray-800 border border-gray-200 shadow-sm hover:bg-yellow-50 hover:text-yellow-900 hover:border-yellow-300 sm:ml-4 sm:w-auto transition-all"
+                    className="btn w-full bg-slate-900 text-slate-200 border border-slate-800 shadow-sm hover:bg-slate-800 hover:text-white hover:border-slate-700 sm:ml-4 sm:w-auto transition-all"
                     href="#0"
                   >
                     Learn More

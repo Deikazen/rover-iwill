@@ -6,7 +6,7 @@ import PageIllustration from "@/components/page-illustration";
 
 export default function DashboardContent() {
   // State for system status and telemetry
-  const [themeMode, setThemeMode] = useState<"light" | "dark">("light");
+  const [themeMode, setThemeMode] = useState<"light" | "dark">("dark");
   const [driveMode, setDriveMode] = useState<"2WD" | "4WD">("4WD");
   const [gasLevel, setGasLevel] = useState<number>(65);
   const [remLevel, setRemLevel] = useState<number>(0);
@@ -225,20 +225,8 @@ export default function DashboardContent() {
               </div>
             </div>
 
-            {/* Header Action Buttons & Theme Switcher */}
+            {/* Header Action Buttons */}
             <div className="flex items-center gap-2.5">
-              {/* Theme Toggle */}
-              <button
-                type="button"
-                onClick={() => setThemeMode(isDark ? "light" : "dark")}
-                className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-amber-500/10 hover:border-amber-500/40 hover:text-amber-500 dark:hover:text-amber-400 transition-all cursor-pointer shadow-xs"
-                title={
-                  isDark ? "Switch to Light Theme" : "Switch to Dark Theme"
-                }
-              >
-                {isDark ? "☀️" : "🌙"}
-              </button>
-
               {/* Resync Button */}
               <button
                 type="button"

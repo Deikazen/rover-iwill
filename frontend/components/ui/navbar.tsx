@@ -11,11 +11,11 @@ export default function Navbar() {
     <header className="fixed top-2 z-30 w-full md:top-6">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         {/* Container Glassmorphism */}
-        <div className="relative flex h-14 items-center justify-between gap-3 rounded-2xl border border-white/50 bg-white/40 px-4 shadow-lg shadow-black/5 backdrop-blur-md backdrop-saturate-150 transition-all">
+        <div className="relative flex h-14 items-center justify-between gap-3 rounded-2xl border border-slate-800 bg-slate-900/80 px-4 shadow-xl shadow-black/20 backdrop-blur-md transition-all">
           {/* Site branding */}
           <div className="flex items-center gap-2.5">
             <Logo />
-            <span className="text-sm font-semibold tracking-tight text-gray-900 hidden sm:inline-block">
+            <span className="text-sm font-semibold tracking-tight text-white hidden sm:inline-block">
               Rover
             </span>
           </div>
@@ -28,7 +28,7 @@ export default function Navbar() {
                 className={`btn-sm rounded-xl px-3.5 py-1.5 text-sm font-semibold transition-all ${
                   pathname === "/"
                     ? "bg-yellow-400 text-slate-950 shadow-xs hover:bg-yellow-300"
-                    : "bg-white/60 text-gray-800 shadow-sm backdrop-blur-sm hover:bg-yellow-100 hover:text-yellow-900"
+                    : "bg-slate-800/80 text-slate-200 shadow-sm backdrop-blur-sm hover:bg-slate-700 hover:text-white"
                 }`}
               >
                 Home
@@ -40,7 +40,7 @@ export default function Navbar() {
                 className={`btn-sm rounded-xl px-3.5 py-1.5 text-sm font-semibold transition-all ${
                   pathname?.startsWith("/dashboard")
                     ? "bg-yellow-400 text-slate-950 shadow-xs hover:bg-yellow-300"
-                    : "bg-white/60 text-gray-800 shadow-sm backdrop-blur-sm hover:bg-yellow-100 hover:text-yellow-900"
+                    : "bg-slate-800/80 text-slate-200 shadow-sm backdrop-blur-sm hover:bg-slate-700 hover:text-white"
                 }`}
               >
                 Dashboard
