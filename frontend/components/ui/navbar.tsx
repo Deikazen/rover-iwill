@@ -25,10 +25,10 @@ export default function Navbar() {
             <li>
               <Link
                 href="/"
-                className={`btn-sm rounded-xl px-3.5 py-1.5 text-sm font-medium transition-all ${
+                className={`btn-sm rounded-xl px-3.5 py-1.5 text-sm font-semibold transition-all ${
                   pathname === "/"
-                    ? "bg-gray-900 text-white shadow-sm"
-                    : "bg-white/60 text-gray-800 shadow-sm backdrop-blur-sm hover:bg-white/90"
+                    ? "bg-linear-to-r from-amber-400 via-yellow-500 to-amber-600 text-slate-950 shadow-md shadow-amber-500/20 hover:brightness-105"
+                    : "bg-white/60 text-gray-800 shadow-sm backdrop-blur-sm hover:bg-amber-50 hover:text-amber-700"
                 }`}
               >
                 Home
@@ -37,10 +37,10 @@ export default function Navbar() {
             <li>
               <Link
                 href="/dashboard"
-                className={`btn-sm rounded-xl px-3.5 py-1.5 text-sm font-medium transition-all ${
+                className={`btn-sm rounded-xl px-3.5 py-1.5 text-sm font-semibold transition-all ${
                   pathname?.startsWith("/dashboard")
-                    ? "bg-gray-900 text-white shadow-sm"
-                    : "bg-white/60 text-gray-800 shadow-sm backdrop-blur-sm hover:bg-white/90"
+                    ? "bg-linear-to-r from-amber-400 via-yellow-500 to-amber-600 text-slate-950 shadow-md shadow-amber-500/20 hover:brightness-105"
+                    : "bg-white/60 text-gray-800 shadow-sm backdrop-blur-sm hover:bg-amber-50 hover:text-amber-700"
                 }`}
               >
                 Dashboard

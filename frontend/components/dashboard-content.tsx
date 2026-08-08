@@ -231,7 +231,7 @@ export default function DashboardContent() {
               <button
                 type="button"
                 onClick={() => setThemeMode(isDark ? "light" : "dark")}
-                className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition-all cursor-pointer shadow-xs"
+                className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-amber-500/10 hover:border-amber-500/40 hover:text-amber-500 dark:hover:text-amber-400 transition-all cursor-pointer shadow-xs"
                 title={
                   isDark ? "Switch to Light Theme" : "Switch to Dark Theme"
                 }
@@ -244,10 +244,10 @@ export default function DashboardContent() {
                 type="button"
                 onClick={handleResync}
                 disabled={isResynced}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3.5 py-2 text-xs font-semibold text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-700 transition-all cursor-pointer shadow-xs"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3.5 py-2 text-xs font-semibold text-gray-700 dark:text-slate-200 hover:bg-amber-500/10 hover:border-amber-500/40 hover:text-amber-500 dark:hover:text-amber-400 transition-all cursor-pointer shadow-xs"
               >
                 <svg
-                  className={`h-3.5 w-3.5 ${isResynced ? "animate-spin text-blue-600" : ""}`}
+                  className={`h-3.5 w-3.5 ${isResynced ? "animate-spin text-amber-500" : ""}`}
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -665,8 +665,8 @@ export default function DashboardContent() {
                       onClick={() => setDriveMode("2WD")}
                       className={`flex-1 rounded-lg py-1 text-[10px] font-mono font-bold transition-all cursor-pointer ${
                         driveMode === "2WD"
-                          ? "bg-amber-500 text-slate-950 shadow-xs"
-                          : "bg-gray-200 dark:bg-slate-800 text-gray-700 dark:text-slate-300"
+                          ? "bg-linear-to-r from-amber-400 via-yellow-500 to-amber-600 text-slate-950 shadow-md shadow-amber-500/20"
+                          : "bg-gray-200 dark:bg-slate-800 text-gray-700 dark:text-slate-300 hover:bg-amber-500/20 hover:text-amber-500"
                       }`}
                     >
                       2WD (RWD)
@@ -676,8 +676,8 @@ export default function DashboardContent() {
                       onClick={() => setDriveMode("4WD")}
                       className={`flex-1 rounded-lg py-1 text-[10px] font-mono font-bold transition-all cursor-pointer ${
                         driveMode === "4WD"
-                          ? "bg-amber-500 text-slate-950 shadow-xs"
-                          : "bg-gray-200 dark:bg-slate-800 text-gray-700 dark:text-slate-300"
+                          ? "bg-linear-to-r from-amber-400 via-yellow-500 to-amber-600 text-slate-950 shadow-md shadow-amber-500/20"
+                          : "bg-gray-200 dark:bg-slate-800 text-gray-700 dark:text-slate-300 hover:bg-amber-500/20 hover:text-amber-500"
                       }`}
                     >
                       4WD (4x4)
