@@ -1,11 +1,12 @@
 import Link from "next/link";
 import Logo from "./logo";
 
-export default function Header() {
+export default function Navbar() {
   return (
     <header className="fixed top-2 z-30 w-full md:top-6">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="relative flex h-14 items-center justify-between gap-3 rounded-2xl bg-white/90 px-3 shadow-lg shadow-black/[0.03] backdrop-blur-xs before:pointer-events-none before:absolute before:inset-0 before:rounded-[inherit] before:border before:border-transparent before:[background:linear-gradient(var(--color-gray-100),var(--color-gray-200))_border-box] before:[mask-composite:exclude_!important] before:[mask:linear-gradient(white_0_0)_padding-box,_linear-gradient(white_0_0)]">
+        {/* Container Glassmorphism */}
+        <div className="relative flex h-14 items-center justify-between gap-3 rounded-2xl border border-white/50 bg-white/40 px-4 shadow-lg shadow-black/5 backdrop-blur-md backdrop-saturate-150 transition-all">
           {/* Site branding */}
           <div className="flex flex-1 items-center">
             <Logo />
@@ -16,7 +17,7 @@ export default function Header() {
             <li>
               <Link
                 href="/signin"
-                className="btn-sm bg-white text-gray-800 shadow-sm hover:bg-gray-50"
+                className="btn-sm rounded-xl bg-white/60 px-3 py-1.5 text-sm font-medium text-gray-800 shadow-sm backdrop-blur-sm transition-all hover:bg-white/90 hover:shadow"
               >
                 Login
               </Link>
@@ -24,7 +25,7 @@ export default function Header() {
             <li>
               <Link
                 href="/signup"
-                className="btn-sm bg-gray-800 text-gray-200 shadow-sm hover:bg-gray-900"
+                className="btn-sm rounded-xl bg-gray-900/90 px-3 py-1.5 text-sm font-medium text-white shadow-sm transition-all hover:bg-gray-900"
               >
                 Register
               </Link>
