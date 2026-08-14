@@ -35,12 +35,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-<<<<<<< HEAD
-.vscode
-
-=======
 # contentlayer
 .contentlayer
 
 .vscode
->>>>>>> landing
+
+list.txt
