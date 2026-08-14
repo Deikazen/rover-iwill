@@ -1,19 +1,35 @@
+import cv2
 import socket
+import numpy as np
 
-
-UDP_IP = "0.0.0.0"
-UDP_PORT = 5005
+# Listen ke semua interface di laptop pada port 5005
+LISTEN_IP = "0.0.0.0"
+LISTEN_PORT = 5005
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-sock.bind((UDP_IP, UDP_PORT))
+sock.bind((LISTEN_IP, LISTEN_PORT))
 
-print(f"Mendengarkan data dari Raspberry Pi di port {UDP_PORT}...")
+print(f"Menunggu video stream di port {LISTEN_PORT}...")
 
 try:
     while True:
-        data, addr = sock.recvfrom(1024)
-        print(f"Data dari Raspi ({addr[0]}): {data.decode('utf-8')}")
+        # Terima frame UDP (maks buffer 65536 bytes)
+        packet, _ = sock.recvfrom(65536)
+
+        # Decode byte menjadi gambar
+        np_arr = np.frombuffer(packet, dtype=np.uint8)
+        frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+
+        if frame is not None:
+            cv2.imshow("GCS - Raspberry Pi Stream", frame)
+
+        # Tekan tombol 'q' di jendela gambar untuk keluar
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
 except KeyboardInterrupt:
-    print("\nPenerima dihentikan.")
+    print("\nReceiver dihentikan.")
+
 finally:
     sock.close()
+    cv2.destroyAllWindows()
