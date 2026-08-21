@@ -4,6 +4,10 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import PageIllustration from "@/components/page-illustration";
 
+const RASPBERRY_PI_IP = "10.37.36.113"; // Ubah sesuai IP Pi Anda
+const VIDEO_STREAM_URL = `http://${RASPBERRY_PI_IP}:5000/video`;
+const VIDEO_STREAM_URL2 = `http://${RASPBERRY_PI_IP}:5000/video`;
+
 export default function DashboardContent() {
   // State for system status and telemetry
   const [themeMode, setThemeMode] = useState<"light" | "dark">("dark");
@@ -305,12 +309,15 @@ export default function DashboardContent() {
             </div>
 
             <div className="relative aspect-video w-full overflow-hidden bg-black">
-              <Image
-                src="/images/camera_front.jpg"
-                alt="Kamera Depan Feed"
-                fill
-                className="object-cover transition-opacity duration-300"
-                priority
+              <img
+                src={VIDEO_STREAM_URL}
+                alt="Live Camera Feed Stream"
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  // Fallback jika API belum hidup / disconnected
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = "/images/camera_front.jpg";
+                }}
               />
 
               {/* HUD Reticle Overlay */}
@@ -445,11 +452,15 @@ export default function DashboardContent() {
             </div>
 
             <div className="relative aspect-video w-full overflow-hidden bg-black">
-              <Image
-                src="/images/camera_rear.jpg"
-                alt="Kamera Belakang Feed"
-                fill
-                className="object-cover transition-opacity duration-300"
+              <img
+                src={VIDEO_STREAM_URL2}
+                alt="Live Camera Feed Stream"
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  // Fallback jika API belum hidup / disconnected
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = "/images/camera_front.jpg";
+                }}
               />
 
               {/* HUD Parking Guideline Overlay */}
