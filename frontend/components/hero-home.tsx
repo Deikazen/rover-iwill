@@ -125,6 +125,14 @@ export default function HeroHome() {
                 className="w-full h-full object-cover rounded-xl"
                 priority
               />
+              <p
+                className="mt-6 text-center text-sm font-medium text-slate-400 tracking-wide"
+                data-aos="zoom-y-out"
+                data-aos-delay={750}
+              >
+                Equipped with high-precision telemetry, LIDAR mapping, and
+                real-time environmental analysis.
+              </p>
             </div>
           </div>
         </div>
