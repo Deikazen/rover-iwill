@@ -1,12 +1,12 @@
 import Image from "next/image";
 import Logo01 from "@/public/images/logo-01.svg";
-import Logo02 from "@/public/images/logo-02.svg";
+import Logo02 from "@/public/images/raspberrypi_logo_icon_168029.svg"; // raspi logo
 import Logo03 from "@/public/images/logo-03.svg";
-import Logo04 from "@/public/images/logo-04.svg";
+import Logo04 from "@/public/images/stm32.svg";
 import Logo05 from "@/public/images/logo-05.svg";
 import Logo06 from "@/public/images/logo-06.svg";
-import Logo07 from "@/public/images/logo-07.svg";
-import Logo08 from "@/public/images/logo-08.svg";
+import Logo07 from "@/public/images/lora.svg";
+import Logo08 from "@/public/images/Logitech_logo.svg";
 import Logo09 from "@/public/images/logo-09.svg";
 import Logo from "@/components/ui/logo";
 
@@ -191,9 +191,9 @@ export default function BusinessCategories() {
                       <Image
                         className="relative"
                         src={Logo02}
-                        width={23}
-                        height={22}
-                        alt="Logo 02"
+                        width={30}
+                        height={30}
+                        alt="raspi"
                       />
                     </div>
                   </div>
@@ -217,9 +217,9 @@ export default function BusinessCategories() {
                       <Image
                         className="relative"
                         src={Logo04}
-                        width={24}
-                        height={22}
-                        alt="Logo 04"
+                        width={40}
+                        height={40}
+                        alt="stm32"
                       />
                     </div>
                   </div>
@@ -256,9 +256,9 @@ export default function BusinessCategories() {
                       <Image
                         className="relative"
                         src={Logo07}
-                        width={25}
-                        height={25}
-                        alt="Logo 07"
+                        width={40}
+                        height={40}
+                        alt="Lora"
                       />
                     </div>
                   </div>
@@ -269,9 +269,9 @@ export default function BusinessCategories() {
                       <Image
                         className="relative"
                         src={Logo08}
-                        width={20}
-                        height={20}
-                        alt="Logo 08"
+                        width={30}
+                        height={30}
+                        alt="Logitech"
                       />
                     </div>
                   </div>
