@@ -21,7 +21,7 @@ export default function HeroHome() {
               className="mb-6 border-y [border-image:linear-gradient(to_right,transparent,--theme(--color-slate-300/.8),transparent)1]"
               data-aos="zoom-y-out"
             >
-              <div className="-mx-0.5 flex justify-center -space-x-3">
+              {/* <div className="-mx-0.5 flex justify-center -space-x-3">
                 <Image
                   className="box-content rounded-full border-2 border-slate-900"
                   src={Avatar01}
@@ -64,7 +64,7 @@ export default function HeroHome() {
                   height={32}
                   alt="Avatar 05"
                 />
-              </div>
+              </div> */}
             </div>
             <h1
               className="mb-6 border-y text-5xl font-bold text-white [border-image:linear-gradient(to_right,transparent,--theme(--color-slate-800),transparent)1] md:text-6xl"
