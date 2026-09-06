@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.router import router
+from app.api.rover_router import rover_router
 import uvicorn
 
 app = FastAPI()
@@ -21,6 +22,7 @@ def read_root():
 
 
 app.include_router(router, prefix='/items')
+app.include_router(rover_router, prefix='/rover', tags=['rover'])
 
 if __name__ == '__main__':
     uvicorn.run("main:app", host='127.0.0.1', port=8000, reload=True)

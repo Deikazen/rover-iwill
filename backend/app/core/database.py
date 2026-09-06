@@ -62,5 +62,5 @@ def get_db():
 try:
     with engine.connect() as connection:
         print("Connection successful!")
-except ConnectionError as e:
-    print(f"Failed to connect: {e}")
+except Exception as e:
+    print(f"Failed to connect to database: {e}")

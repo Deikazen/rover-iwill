@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import PageIllustration from "@/components/page-illustration";
 
-const RASPBERRY_PI_IP = "192.168.99.177"; // Ubah sesuai IP Pi Anda
+const RASPBERRY_PI_IP = "192.168.137.120"; // Ubah sesuai IP Pi Anda
 const VIDEO_STREAM_URL = `http://${RASPBERRY_PI_IP}:5000/video1`;
 const VIDEO_STREAM_URL2 = `http://${RASPBERRY_PI_IP}:5000/video2`;
 
@@ -22,6 +22,22 @@ export default function DashboardContent() {
   const [batteryVoltage, setBatteryVoltage] = useState<number>(24.2);
   const [cpuTemp, setCpuTemp] = useState<number>(42);
   const [currentTime, setCurrentTime] = useState<string>("15:42:18");
+
+  // ESP32 Rover Backend Connection State
+  const [backendUrl, setBackendUrl] = useState<string>("http://127.0.0.1:8000");
+  const [esp32Ip, setEsp32Ip] = useState<string>("192.168.1.132");
+  const [esp32Port, setEsp32Port] = useState<number>(81);
+  const [isEspConnected, setIsEspConnected] = useState<boolean>(false);
+  const [isEspConnecting, setIsEspConnecting] = useState<boolean>(false);
+  const [espAction, setEspAction] = useState<string>("STOP");
+  const [espTargetSpeed, setEspTargetSpeed] = useState<number>(0);
+  const [espSpeedBts, setEspSpeedBts] = useState<number>(150);
+  const [espRpm, setEspRpm] = useState<number>(0);
+  const [espError, setEspError] = useState<string | null>(null);
+  const [keyboardEnabled, setKeyboardEnabled] = useState<boolean>(true);
+  const [activeKey, setActiveKey] = useState<string | null>(null);
+  const [showConfig, setShowConfig] = useState<boolean>(false);
+  const wsRef = useRef<WebSocket | null>(null);
 
   // Interactive Modals & Toasts
   const [isResynced, setIsResynced] = useState(false);
@@ -43,6 +59,299 @@ export default function DashboardContent() {
     { time: "15:42:30", message: "Misi dimulai", type: "highlight" },
     { time: "15:42:35", message: "Mendeteksi halangan 3m", type: "warning" },
   ]);
+
+  // Connect to Backend WebSocket for Real-time ESP32 Control and Telemetry
+  useEffect(() => {
+    let ws: WebSocket | null = null;
+    let reconnectTimeout: ReturnType<typeof setTimeout> | null = null;
+    let isMounted = true;
+
+    const connectBackendWs = () => {
+      try {
+        const wsUrl = backendUrl.replace(/^http/, "ws") + "/rover/ws";
+        ws = new WebSocket(wsUrl);
+        wsRef.current = ws;
+
+        ws.onopen = () => {
+          console.log("Connected to Rover Backend WebSocket");
+          ws?.send(JSON.stringify({ action: "get_status" }));
+        };
+
+        ws.onmessage = (event) => {
+          try {
+            const msg = JSON.parse(event.data);
+            if (msg.type === "status" && msg.data) {
+              const d = msg.data;
+              setIsEspConnected(Boolean(d.connected));
+              setIsEspConnecting(Boolean(d.connecting));
+              if (d.current_action) setEspAction(d.current_action);
+              if (typeof d.target_speed === "number")
+                setEspTargetSpeed(d.target_speed);
+              if (typeof d.speed_bts === "number") setEspSpeedBts(d.speed_bts);
+              if (typeof d.rpm === "number") setEspRpm(d.rpm);
+              if (d.ip) setEsp32Ip(d.ip);
+              if (d.port) setEsp32Port(d.port);
+              if (d.error) setEspError(d.error);
+              else setEspError(null);
+            }
+          } catch (err) {
+            console.error("Error parsing backend ws msg", err);
+          }
+        };
+
+        ws.onclose = () => {
+          if (isMounted) {
+            reconnectTimeout = setTimeout(connectBackendWs, 3000);
+          }
+        };
+
+        ws.onerror = (err) => {
+          console.warn("Rover Backend WS error", err);
+        };
+      } catch (e) {
+        console.error("Failed to initialize Rover Backend WS", e);
+        if (isMounted) {
+          reconnectTimeout = setTimeout(connectBackendWs, 3000);
+        }
+      }
+    };
+
+    connectBackendWs();
+
+    // Periodic status poll as fallback
+    const statusInterval = setInterval(async () => {
+      try {
+        const res = await fetch(`${backendUrl}/rover/status`);
+        if (res.ok) {
+          const d = await res.json();
+          setIsEspConnected(Boolean(d.connected));
+          setIsEspConnecting(Boolean(d.connecting));
+          if (d.current_action) setEspAction(d.current_action);
+          if (typeof d.target_speed === "number")
+            setEspTargetSpeed(d.target_speed);
+          if (typeof d.speed_bts === "number") setEspSpeedBts(d.speed_bts);
+          if (typeof d.rpm === "number") setEspRpm(d.rpm);
+        }
+      } catch {
+        // Backend not currently reachable
+      }
+    }, 2500);
+
+    return () => {
+      isMounted = false;
+      if (reconnectTimeout) clearTimeout(reconnectTimeout);
+      clearInterval(statusInterval);
+      if (ws) ws.close();
+    };
+  }, [backendUrl]);
+
+  // Command dispatcher function to Backend
+  const sendRoverCommand = async (cmd: string, label?: string) => {
+    const timeStr = new Date().toTimeString().split(" ")[0];
+    try {
+      if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+        wsRef.current.send(JSON.stringify({ action: "command", command: cmd }));
+      } else {
+        await fetch(`${backendUrl}/rover/command`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ command: cmd }),
+        });
+      }
+
+      setLogs((prev) => [
+        {
+          time: timeStr,
+          message: `ESP32 CMD: ${cmd} (${label || cmd})`,
+          type: "action",
+        },
+        ...prev.slice(0, 30),
+      ]);
+    } catch (e: any) {
+      setLogs((prev) => [
+        {
+          time: timeStr,
+          message: `Gagal kirim CMD ${cmd}: ${e?.message || "Error"}`,
+          type: "warning",
+        },
+        ...prev.slice(0, 30),
+      ]);
+    }
+  };
+
+  // Connect to ESP32 via Backend
+  const handleConnectEsp32 = async () => {
+    setIsEspConnecting(true);
+    setEspError(null);
+    const timeStr = new Date().toTimeString().split(" ")[0];
+    try {
+      if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+        wsRef.current.send(
+          JSON.stringify({ action: "connect", ip: esp32Ip, port: esp32Port }),
+        );
+      } else {
+        const res = await fetch(`${backendUrl}/rover/connect`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ip: esp32Ip, port: esp32Port }),
+        });
+        const data = await res.json();
+        if (!data.success) {
+          setEspError(data.message || "Gagal terhubung");
+        }
+      }
+      setLogs((prev) => [
+        {
+          time: timeStr,
+          message: `Menghubungkan ke ESP32 (${esp32Ip}:${esp32Port})...`,
+          type: "info",
+        },
+        ...prev.slice(0, 30),
+      ]);
+    } catch (err: any) {
+      setEspError(err?.message || "Gagal menghubungkan ke backend");
+      setIsEspConnecting(false);
+    }
+  };
+
+  // Disconnect from ESP32 via Backend
+  const handleDisconnectEsp32 = async () => {
+    const timeStr = new Date().toTimeString().split(" ")[0];
+    try {
+      if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+        wsRef.current.send(JSON.stringify({ action: "disconnect" }));
+      } else {
+        await fetch(`${backendUrl}/rover/disconnect`, { method: "POST" });
+      }
+      setIsEspConnected(false);
+      setEspAction("STOP");
+      setLogs((prev) => [
+        {
+          time: timeStr,
+          message: `Terputus dari ESP32`,
+          type: "warning",
+        },
+        ...prev.slice(0, 30),
+      ]);
+    } catch (err: any) {
+      console.error(err);
+    }
+  };
+
+  // Emergency Stop Handler
+  const handleEmergencyStop = () => {
+    sendRoverCommand("x", "EMERGENCY STOP");
+    setRemLevel(100);
+    setGasLevel(0);
+    setEspAction("STOP");
+    setEspTargetSpeed(0);
+    setTimeout(() => setRemLevel(0), 1200);
+  };
+
+  // Steer Handlers with ESP32 commands
+  const handleSteerWithCommand = (delta: number) => {
+    handleSteer(delta);
+    if (delta < 0) {
+      sendRoverCommand("L", "PULSE KIRI");
+    } else if (delta > 0) {
+      sendRoverCommand("R", "PULSE KANAN");
+    }
+  };
+
+  const handleSteerResetWithCommand = () => {
+    setSteeringAngle(0);
+    sendRoverCommand("c", "KEMUDI PUSAT (LURUS)");
+    const timeStr = new Date().toTimeString().split(" ")[0];
+    setLogs((prev) => [
+      {
+        time: timeStr,
+        message: `Kemudi di-reset ke 0° (tengah)`,
+        type: "action",
+      },
+      ...prev,
+    ]);
+  };
+
+  // Keyboard Drive Controller Hook
+  useEffect(() => {
+    if (!keyboardEnabled) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (
+        document.activeElement &&
+        ["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement.tagName)
+      ) {
+        return;
+      }
+
+      const key = e.key.toLowerCase();
+      if (e.repeat) return;
+
+      switch (key) {
+        case "w":
+        case "arrowup":
+          e.preventDefault();
+          setActiveKey("W");
+          sendRoverCommand("w", "MAJU");
+          break;
+        case "s":
+        case "arrowdown":
+          e.preventDefault();
+          setActiveKey("S");
+          sendRoverCommand("s", "MUNDUR");
+          break;
+        case "a":
+        case "arrowleft":
+          e.preventDefault();
+          setActiveKey("A");
+          sendRoverCommand("a", "KIRI");
+          handleSteer(-5);
+          break;
+        case "d":
+        case "arrowright":
+          e.preventDefault();
+          setActiveKey("D");
+          sendRoverCommand("d", "KANAN");
+          handleSteer(5);
+          break;
+        case "c":
+          e.preventDefault();
+          setActiveKey("C");
+          handleSteerResetWithCommand();
+          break;
+        case "q":
+          e.preventDefault();
+          setActiveKey("Q");
+          sendRoverCommand("L", "PULSE KIRI");
+          handleSteer(-5);
+          break;
+        case "e":
+          e.preventDefault();
+          setActiveKey("E");
+          sendRoverCommand("R", "PULSE KANAN");
+          handleSteer(5);
+          break;
+        case "x":
+        case " ":
+          e.preventDefault();
+          setActiveKey("X");
+          handleEmergencyStop();
+          break;
+      }
+    };
+
+    const handleKeyUp = () => {
+      setActiveKey(null);
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+    };
+  }, [keyboardEnabled, backendUrl]);
 
   // Live real-time clock & telemetry simulation effect
   useEffect(() => {
@@ -106,6 +415,9 @@ export default function DashboardContent() {
   const handleGasChange = (val: number) => {
     setGasLevel(val);
     setSpeed(parseFloat((val * 0.22).toFixed(1)));
+    const btsSpeed = Math.round((val / 100) * 150);
+    setEspSpeedBts(btsSpeed);
+    sendRoverCommand(`v${btsSpeed}`, `KECEPATAN ${btsSpeed} PWM`);
   };
 
   // Sensort Status Items
@@ -141,15 +453,15 @@ export default function DashboardContent() {
     {
       id: "esp32",
       name: "ESP32 CORE",
-      status: isTerminated ? "ERROR" : "OK",
-      ok: !isTerminated,
+      status: isTerminated ? "ERROR" : isEspConnected ? "CONNECTED" : "OFFLINE",
+      ok: !isTerminated && isEspConnected,
       icon: "🔳",
     },
     {
       id: "motor",
-      name: "MOTOR DRIVER",
-      status: isTerminated ? "OFFLINE" : "OK",
-      ok: !isTerminated,
+      name: "MOTOR DRIVER (BTS7960)",
+      status: isTerminated ? "OFFLINE" : isEspConnected ? "ACTIVE" : "STANDBY",
+      ok: !isTerminated && isEspConnected,
       icon: "⚡",
     },
   ];
@@ -186,16 +498,24 @@ export default function DashboardContent() {
               {/* Status Badge */}
               <div
                 className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold ${
-                  isTerminated
+                  isTerminated || !isEspConnected
                     ? "border-red-500/30 bg-red-500/10 text-red-600 dark:text-red-400"
                     : "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
                 }`}
               >
                 <span
-                  className={`h-2 w-2 rounded-full ${isTerminated ? "bg-red-500 animate-ping" : "bg-emerald-500 animate-pulse"}`}
+                  className={`h-2 w-2 rounded-full ${
+                    isTerminated || !isEspConnected
+                      ? "bg-red-500"
+                      : "bg-emerald-500 animate-pulse"
+                  }`}
                 ></span>
                 <span className="font-mono uppercase">
-                  {isTerminated ? "DISCONNECTED" : "CONNECTED"}
+                  {isTerminated
+                    ? "TERMINATED"
+                    : isEspConnected
+                      ? "CONNECTED"
+                      : "DISCONNECTED"}
                 </span>
               </div>
             </div>
@@ -203,9 +523,9 @@ export default function DashboardContent() {
             {/* Metrics Pills: IP, PING, FPS, TIME */}
             <div className="flex flex-wrap items-center gap-3 sm:gap-6 text-xs font-mono">
               <div className="flex items-center gap-2 rounded-xl border border-gray-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 px-3 py-1.5 shadow-2xs">
-                <span className={textSubClass}>IP ADDRESS</span>
-                <span className="font-bold text-blue-600 dark:text-blue-400">
-                  192.168.1.132
+                <span className={textSubClass}>IP ESP32</span>
+                <span className="font-bold text-blue-600 dark:text-blue-400 font-mono">
+                  {esp32Ip}
                 </span>
               </div>
 
@@ -520,19 +840,330 @@ export default function DashboardContent() {
           <div
             className={`flex flex-col justify-between rounded-2xl border p-5 backdrop-blur-md transition-all ${cardBgClass}`}
           >
-            <h2 className="mb-4 text-xs font-bold uppercase tracking-wider font-mono">
-              KONTROL KENDALI
-            </h2>
+            <div>
+              {/* Header Title and Connection Indicator */}
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <h2 className="text-xs font-bold uppercase tracking-wider font-mono">
+                    KONTROL KENDALI
+                  </h2>
+                  <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-500 border border-amber-500/30">
+                    ESP32
+                  </span>
+                </div>
 
-            <div className="grid gap-4">
+                <div className="flex items-center gap-1.5">
+                  <span
+                    className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-mono font-bold border ${
+                      isEspConnected
+                        ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                        : isEspConnecting
+                          ? "border-amber-500/30 bg-amber-500/10 text-amber-500 animate-pulse"
+                          : "border-red-500/30 bg-red-500/10 text-red-600 dark:text-red-400"
+                    }`}
+                  >
+                    <span
+                      className={`h-1.5 w-1.5 rounded-full ${
+                        isEspConnected
+                          ? "bg-emerald-500 animate-pulse"
+                          : isEspConnecting
+                            ? "bg-amber-400"
+                            : "bg-red-500"
+                      }`}
+                    ></span>
+                    {isEspConnected
+                      ? "TERHUBUNG"
+                      : isEspConnecting
+                        ? "MENGHUBUNGKAN..."
+                        : "TERPUTUS"}
+                  </span>
+
+                  <button
+                    type="button"
+                    onClick={() => setShowConfig(!showConfig)}
+                    title="Pengaturan IP ESP32 & Backend"
+                    className="p-1 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-yellow-400 hover:text-slate-950 transition-colors text-xs cursor-pointer"
+                  >
+                    ⚙️
+                  </button>
+                </div>
+              </div>
+
+              {/* IP Configuration Bar */}
+              {showConfig && (
+                <div className={`mb-3 rounded-xl border p-3 ${innerCardClass}`}>
+                  <div className="text-[10px] font-bold font-mono uppercase mb-2 text-amber-500 flex justify-between items-center">
+                    <span>KONFIGURASI BACKEND & ESP32</span>
+                    <span className="text-slate-400 text-[9px] lowercase font-normal">
+                      ws port: 81
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono mb-2">
+                    <div>
+                      <label className="block text-[9px] text-slate-400 mb-1">
+                        IP ESP32
+                      </label>
+                      <input
+                        type="text"
+                        value={esp32Ip}
+                        onChange={(e) => setEsp32Ip(e.target.value)}
+                        placeholder="192.168.1.132"
+                        className="w-full px-2 py-1 rounded bg-slate-900 border border-slate-700 text-amber-400 text-xs font-mono"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[9px] text-slate-400 mb-1">
+                        BACKEND URL
+                      </label>
+                      <input
+                        type="text"
+                        value={backendUrl}
+                        onChange={(e) => setBackendUrl(e.target.value)}
+                        placeholder="http://127.0.0.1:8000"
+                        className="w-full px-2 py-1 rounded bg-slate-900 border border-slate-700 text-slate-300 text-xs font-mono"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    {!isEspConnected ? (
+                      <button
+                        type="button"
+                        onClick={handleConnectEsp32}
+                        disabled={isEspConnecting}
+                        className="flex-1 py-1.5 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-mono text-[11px] font-bold transition-all shadow-xs cursor-pointer disabled:opacity-50"
+                      >
+                        {isEspConnecting
+                          ? "Menghubungkan..."
+                          : "Hubungkan ke ESP32"}
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={handleDisconnectEsp32}
+                        className="flex-1 py-1.5 px-3 rounded-lg bg-red-600 hover:bg-red-500 text-white font-mono text-[11px] font-bold transition-all shadow-xs cursor-pointer"
+                      >
+                        Putuskan Koneksi
+                      </button>
+                    )}
+                  </div>
+                  {espError && (
+                    <p className="mt-2 text-[10px] font-mono text-red-400">
+                      ⚠️ {espError}
+                    </p>
+                  )}
+                </div>
+              )}
+
+              {/* Status Telemetry Strip */}
+              <div
+                className={`mb-3 grid grid-cols-3 gap-2 rounded-xl border p-2 text-center font-mono ${innerCardClass}`}
+              >
+                <div>
+                  <span className="block text-[9px] text-slate-400 uppercase">
+                    AKSI
+                  </span>
+                  <span
+                    className={`text-[11px] font-black ${
+                      espAction === "MAJU"
+                        ? "text-emerald-400"
+                        : espAction === "MUNDUR"
+                          ? "text-amber-400"
+                          : espAction.includes("KIRI") ||
+                              espAction.includes("KANAN")
+                            ? "text-blue-400"
+                            : "text-red-400"
+                    }`}
+                  >
+                    {espAction}
+                  </span>
+                </div>
+                <div>
+                  <span className="block text-[9px] text-slate-400 uppercase">
+                    BTS PWM
+                  </span>
+                  <span className="text-[11px] font-black text-amber-400">
+                    {espTargetSpeed > 0 ? espTargetSpeed : espSpeedBts}{" "}
+                    <span className="text-[8px] font-normal text-slate-400">
+                      /150
+                    </span>
+                  </span>
+                </div>
+                <div>
+                  <span className="block text-[9px] text-slate-400 uppercase">
+                    RPM LIVE
+                  </span>
+                  <span className="text-[11px] font-black text-cyan-400">
+                    {espRpm}{" "}
+                    <span className="text-[8px] font-normal text-slate-400">
+                      RPM
+                    </span>
+                  </span>
+                </div>
+              </div>
+
+              {/* D-PAD / DIRECTIONAL DRIVE CONTROLLER */}
+              <div className={`mb-3 rounded-xl border p-3 ${innerCardClass}`}>
+                <div className="flex justify-between items-center mb-2">
+                  <span
+                    className={`text-[10px] font-bold uppercase font-mono ${textSubClass}`}
+                  >
+                    KEMUDI GERAK & ARAH
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setKeyboardEnabled(!keyboardEnabled)}
+                    className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded cursor-pointer transition-all ${
+                      keyboardEnabled
+                        ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
+                        : "bg-gray-200 dark:bg-slate-800 text-slate-500"
+                    }`}
+                    title="Aktifkan kontrol keyboard: W, A, S, D, Q, E, C, X, Spasi"
+                  >
+                    ⌨️ KEYBOARD: {keyboardEnabled ? "AKTIF" : "NONAKTIF"}
+                  </button>
+                </div>
+
+                {/* D-Pad Buttons */}
+                <div className="flex flex-col items-center gap-1.5 py-1">
+                  {/* Forward (W) */}
+                  <button
+                    type="button"
+                    onClick={() => sendRoverCommand("w", "MAJU")}
+                    className={`w-28 py-2 rounded-xl font-mono text-xs font-black flex items-center justify-center gap-1 transition-all cursor-pointer shadow-xs ${
+                      activeKey === "W" || espAction === "MAJU"
+                        ? "bg-emerald-500 text-slate-950 scale-95 shadow-emerald-500/30"
+                        : "bg-emerald-600/20 hover:bg-emerald-500/40 text-emerald-400 border border-emerald-500/30"
+                    }`}
+                  >
+                    ▲ MAJU{" "}
+                    <span className="text-[9px] opacity-75 font-normal">
+                      (W)
+                    </span>
+                  </button>
+
+                  {/* Middle row: KIRI (A), STOP (X), KANAN (D) */}
+                  <div className="flex items-center gap-2">
+                    {/* KIRI (A) */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        sendRoverCommand("a", "KIRI");
+                        handleSteer(-5);
+                      }}
+                      className={`w-20 py-2 rounded-xl font-mono text-xs font-black flex items-center justify-center gap-1 transition-all cursor-pointer shadow-xs ${
+                        activeKey === "A" || espAction.includes("KIRI")
+                          ? "bg-blue-500 text-slate-950 scale-95"
+                          : "bg-blue-600/20 hover:bg-blue-500/40 text-blue-400 border border-blue-500/30"
+                      }`}
+                    >
+                      ◀ KIRI{" "}
+                      <span className="text-[9px] opacity-75 font-normal">
+                        (A)
+                      </span>
+                    </button>
+
+                    {/* STOP (X) */}
+                    <button
+                      type="button"
+                      onClick={handleEmergencyStop}
+                      className={`w-22 py-2.5 rounded-xl font-mono text-xs font-black flex flex-col items-center justify-center transition-all cursor-pointer shadow-md ${
+                        activeKey === "X" || espAction === "STOP"
+                          ? "bg-red-500 text-white scale-95 shadow-red-500/40"
+                          : "bg-red-600/30 hover:bg-red-600/50 text-red-300 border border-red-500/40"
+                      }`}
+                    >
+                      <span>🛑 STOP</span>
+                      <span className="text-[8px] opacity-75 font-normal">
+                        (X / Spasi)
+                      </span>
+                    </button>
+
+                    {/* KANAN (D) */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        sendRoverCommand("d", "KANAN");
+                        handleSteer(5);
+                      }}
+                      className={`w-20 py-2 rounded-xl font-mono text-xs font-black flex items-center justify-center gap-1 transition-all cursor-pointer shadow-xs ${
+                        activeKey === "D" || espAction.includes("KANAN")
+                          ? "bg-blue-500 text-slate-950 scale-95"
+                          : "bg-blue-600/20 hover:bg-blue-500/40 text-blue-400 border border-blue-500/30"
+                      }`}
+                    >
+                      KANAN ▶{" "}
+                      <span className="text-[9px] opacity-75 font-normal">
+                        (D)
+                      </span>
+                    </button>
+                  </div>
+
+                  {/* Backward (S) */}
+                  <button
+                    type="button"
+                    onClick={() => sendRoverCommand("s", "MUNDUR")}
+                    className={`w-28 py-2 rounded-xl font-mono text-xs font-black flex items-center justify-center gap-1 transition-all cursor-pointer shadow-xs ${
+                      activeKey === "S" || espAction === "MUNDUR"
+                        ? "bg-amber-500 text-slate-950 scale-95 shadow-amber-500/30"
+                        : "bg-amber-600/20 hover:bg-amber-500/40 text-amber-400 border border-amber-500/30"
+                    }`}
+                  >
+                    ▼ MUNDUR{" "}
+                    <span className="text-[9px] opacity-75 font-normal">
+                      (S)
+                    </span>
+                  </button>
+
+                  {/* Steering helpers */}
+                  <div className="flex gap-1.5 mt-2 w-full justify-center text-[10px] font-mono">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        sendRoverCommand("L", "PULSE KIRI");
+                        handleSteer(-5);
+                      }}
+                      className={`flex-1 py-1 px-1 rounded-lg border border-slate-700 bg-slate-900/80 hover:bg-blue-500/20 text-blue-300 font-semibold transition-all cursor-pointer ${
+                        activeKey === "Q" ? "bg-blue-500 text-slate-950" : ""
+                      }`}
+                      title="Pulse belok kiri 85ms burst (L)"
+                    >
+                      ↶ PULSE L (Q)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleSteerResetWithCommand}
+                      className={`flex-1 py-1 px-1 rounded-lg border border-slate-700 bg-slate-900/80 hover:bg-yellow-400/20 text-yellow-300 font-semibold transition-all cursor-pointer ${
+                        activeKey === "C" ? "bg-yellow-400 text-slate-950" : ""
+                      }`}
+                      title="Kemudi lurus ke tengah (c)"
+                    >
+                      ◎ LURUS (C)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        sendRoverCommand("R", "PULSE KANAN");
+                        handleSteer(5);
+                      }}
+                      className={`flex-1 py-1 px-1 rounded-lg border border-slate-700 bg-slate-900/80 hover:bg-blue-500/20 text-blue-300 font-semibold transition-all cursor-pointer ${
+                        activeKey === "E" ? "bg-blue-500 text-slate-950" : ""
+                      }`}
+                      title="Pulse belok kanan 85ms burst (R)"
+                    >
+                      PULSE R (E) ↷
+                    </button>
+                  </div>
+                </div>
+              </div>
+
               {/* Pedals & Steering Grid */}
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-3 mb-3">
                 {/* Pedal Section */}
                 <div className={`rounded-xl border p-3 ${innerCardClass}`}>
                   <span
                     className={`block text-[10px] font-bold uppercase font-mono mb-2 text-center ${textSubClass}`}
                   >
-                    PEDAL
+                    PEDAL & GAS BTS
                   </span>
 
                   <div className="flex justify-around items-end h-28">
@@ -552,21 +1183,26 @@ export default function DashboardContent() {
                       </span>
                     </div>
 
-                    {/* Rem */}
-                    <div className="flex flex-col items-center gap-1">
+                    {/* Rem (Clickable) */}
+                    <button
+                      type="button"
+                      onClick={handleEmergencyStop}
+                      title="Tekan REM untuk berhenti darurat"
+                      className="flex flex-col items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity"
+                    >
                       <div className="relative w-4 rounded-full bg-gray-200 dark:bg-slate-800 h-20 overflow-hidden">
                         <div
                           className="absolute bottom-0 w-full bg-red-500 transition-all duration-300 rounded-full"
                           style={{ height: `${remLevel}%` }}
                         ></div>
                       </div>
-                      <span className="text-[9px] font-mono font-semibold">
+                      <span className="text-[9px] font-mono font-semibold text-red-400">
                         REM
                       </span>
                       <span className="text-[9px] font-mono font-bold text-red-500">
                         {remLevel}%
                       </span>
-                    </div>
+                    </button>
 
                     {/* Gas */}
                     <div className="flex flex-col items-center gap-1">
@@ -585,7 +1221,7 @@ export default function DashboardContent() {
                     </div>
                   </div>
 
-                  {/* Interactive Gas Slider */}
+                  {/* Interactive Gas Slider mapped to PWM 0-150 */}
                   <div className="mt-2">
                     <input
                       type="range"
@@ -595,6 +1231,10 @@ export default function DashboardContent() {
                       onChange={(e) => handleGasChange(Number(e.target.value))}
                       className="w-full accent-amber-500 cursor-pointer h-1.5 bg-gray-200 dark:bg-slate-700 rounded-lg"
                     />
+                    <div className="flex justify-between text-[8px] font-mono text-slate-400 mt-0.5">
+                      <span>0% (0 PWM)</span>
+                      <span>100% (150 PWM)</span>
+                    </div>
                   </div>
                 </div>
 
@@ -624,20 +1264,26 @@ export default function DashboardContent() {
 
                   <div className="flex gap-1 w-full justify-center">
                     <button
-                      onClick={() => handleSteer(-5)}
+                      type="button"
+                      onClick={() => handleSteerWithCommand(-5)}
                       className="rounded bg-gray-200 dark:bg-slate-800 px-2 py-0.5 text-[10px] font-bold text-gray-700 dark:text-slate-300 hover:bg-yellow-400 hover:text-slate-950 transition-colors cursor-pointer"
+                      title="Belok kiri 5°"
                     >
                       ◀
                     </button>
                     <button
-                      onClick={() => setSteeringAngle(0)}
+                      type="button"
+                      onClick={handleSteerResetWithCommand}
                       className="rounded bg-gray-200 dark:bg-slate-800 px-2 py-0.5 text-[10px] font-bold text-gray-700 dark:text-slate-300 hover:bg-yellow-400 hover:text-slate-950 transition-colors cursor-pointer"
+                      title="Kembalikan lurus ke tengah"
                     >
                       RESET
                     </button>
                     <button
-                      onClick={() => handleSteer(5)}
+                      type="button"
+                      onClick={() => handleSteerWithCommand(5)}
                       className="rounded bg-gray-200 dark:bg-slate-800 px-2 py-0.5 text-[10px] font-bold text-gray-700 dark:text-slate-300 hover:bg-yellow-400 hover:text-slate-950 transition-colors cursor-pointer"
+                      title="Belok kanan 5°"
                     >
                       ▶
                     </button>
@@ -650,7 +1296,7 @@ export default function DashboardContent() {
               </div>
 
               {/* Mode Berkendara & Drivetrain */}
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-3 mb-3">
                 {/* Mode Select */}
                 <div className={`rounded-xl border p-2.5 ${innerCardClass}`}>
                   <span
@@ -717,6 +1363,16 @@ export default function DashboardContent() {
                 </div>
               </div>
             </div>
+
+            {/* Bottom Full Emergency Brake Button */}
+            <button
+              type="button"
+              onClick={handleEmergencyStop}
+              className="w-full mt-2 py-2.5 px-4 rounded-xl bg-red-600/90 hover:bg-red-500 text-white font-mono font-bold text-xs tracking-wider uppercase transition-all shadow-md shadow-red-600/30 flex items-center justify-center gap-2 cursor-pointer hover:scale-[1.01]"
+            >
+              <span>🚨</span>
+              <span>EMERGENCY STOP (X / SPASI)</span>
+            </button>
           </div>
 
           {/* 2. TELEMETRI */}
@@ -771,6 +1427,39 @@ export default function DashboardContent() {
                 </div>
               </div>
 
+              {/* RPM Motor (ESP32 Live Broadcast Telemetry) */}
+              <div className={`rounded-xl border p-3 ${innerCardClass}`}>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-cyan-500/10 text-cyan-400">
+                      ⚙️
+                    </span>
+                    <span
+                      className={`text-xs font-bold font-mono ${textSubClass}`}
+                    >
+                      RPM MOTOR (ESP32)
+                    </span>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-2xl font-black font-mono text-cyan-400">
+                      {espRpm}
+                    </span>
+                    <span className="ml-1 text-xs font-mono text-slate-400">
+                      RPM
+                    </span>
+                  </div>
+                </div>
+                {/* Visual indicator bar */}
+                <div className="mt-2 h-2 w-full rounded-full bg-gray-200 dark:bg-slate-800 overflow-hidden">
+                  <div
+                    className="h-full bg-cyan-400 transition-all duration-300 rounded-full"
+                    style={{
+                      width: `${Math.min(100, (espRpm / 3000) * 100)}%`,
+                    }}
+                  ></div>
+                </div>
+              </div>
+
               {/* Sudut / Angle */}
               <div className={`rounded-xl border p-3 ${innerCardClass}`}>
                 <div className="flex items-center justify-between">
@@ -822,19 +1511,31 @@ export default function DashboardContent() {
                   >
                     SIGNAL RX/TX
                   </span>
-                  <span className="rounded bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 text-[10px] font-bold font-mono px-2 py-0.5">
-                    STABIL
+                  <span
+                    className={`rounded border text-[10px] font-bold font-mono px-2 py-0.5 ${
+                      isEspConnected
+                        ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-500"
+                        : "bg-amber-500/10 border-amber-500/30 text-amber-500"
+                    }`}
+                  >
+                    {isEspConnected ? "STABIL (ESP32 ON)" : "STANDBY"}
                   </span>
                 </div>
 
                 {/* Level indicator bar */}
                 <div className="h-2 w-full rounded-full bg-gray-200 dark:bg-slate-800 overflow-hidden">
-                  <div className="h-full w-[94%] bg-yellow-400 rounded-full"></div>
+                  <div
+                    className={`h-full rounded-full transition-all duration-300 ${
+                      isEspConnected
+                        ? "w-[96%] bg-emerald-400"
+                        : "w-[40%] bg-amber-400"
+                    }`}
+                  ></div>
                 </div>
 
                 <div className="flex justify-between text-[10px] font-mono text-slate-400 mt-2">
-                  <span>LAT: 8ms</span>
-                  <span>LOSS: 0.02%</span>
+                  <span>LAT: {isEspConnected ? "8ms" : "--"}</span>
+                  <span>LOSS: {isEspConnected ? "0.01%" : "--"}</span>
                 </div>
               </div>
             </div>

@@ -193,9 +193,7 @@ export default function Footer({ border = false }: { border?: boolean }) {
               </li>
             </ul>
           </div> */}
-          <div className="space-y-2 sm:col-span-6 md:col-span-3 lg:col-span-2">
-            Location
-          </div>
+          <div className="space-y-2 sm:col-span-6 md:col-span-3 lg:col-span-2"></div>
         </div>
       </div>
 
