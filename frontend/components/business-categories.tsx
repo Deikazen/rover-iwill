@@ -1,13 +1,13 @@
 import Image from "next/image";
 import Logo01 from "@/public/images/logo-01.svg";
 import Logo02 from "@/public/images/raspberrypi_logo_icon_168029.svg"; // raspi logo
-import Logo03 from "@/public/images/logo-03.svg";
+import Logo03 from "@/public/images/Python-logo-notext.svg";
 import Logo04 from "@/public/images/stm32.svg";
 import Logo05 from "@/public/images/logo-05.svg";
-import Logo06 from "@/public/images/logo-06.svg";
+import Logo06 from "@/public/images/fastapi.svg";
 import Logo07 from "@/public/images/lora.svg";
 import Logo08 from "@/public/images/Logitech_logo.svg";
-import Logo09 from "@/public/images/logo-09.svg";
+import Logo09 from "@/public/images/Arduino_IDE_logo.svg";
 import Logo from "@/components/ui/logo";
 
 export default function BusinessCategories() {
@@ -204,9 +204,9 @@ export default function BusinessCategories() {
                       <Image
                         className="relative"
                         src={Logo03}
-                        width={22}
+                        width={30}
                         height={22}
-                        alt="Logo 03"
+                        alt="python"
                       />
                     </div>
                   </div>
@@ -243,9 +243,9 @@ export default function BusinessCategories() {
                       <Image
                         className="relative"
                         src={Logo06}
-                        width={20}
-                        height={18}
-                        alt="Logo 06"
+                        width={25}
+                        height={38}
+                        alt="fastapi"
                       />
                     </div>
                   </div>
@@ -284,7 +284,7 @@ export default function BusinessCategories() {
                         src={Logo09}
                         width={21}
                         height={13}
-                        alt="Logo 09"
+                        alt="arduino ide"
                       />
                     </div>
                   </div>
