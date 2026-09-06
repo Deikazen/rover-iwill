@@ -14,13 +14,11 @@ export default function Footer({ border = false }: { border?: boolean }) {
             <div>
               <Logo />
             </div>
-            <div className="text-sm text-slate-400">
-              &copy; Cruip.com - All rights reserved.
-            </div>
+            <div className="text-sm text-slate-400">R.O.V.E.R.</div>
           </div>
 
           {/* 2nd block */}
-          <div className="space-y-2 sm:col-span-6 md:col-span-3 lg:col-span-2">
+          {/* <div className="space-y-2 sm:col-span-6 md:col-span-3 lg:col-span-2">
             <h3 className="text-sm font-medium text-slate-200">Product</h3>
             <ul className="space-y-2 text-sm">
               <li>
@@ -64,10 +62,10 @@ export default function Footer({ border = false }: { border?: boolean }) {
                 </Link>
               </li>
             </ul>
-          </div>
+          </div> */}
 
           {/* 3rd block */}
-          <div className="space-y-2 sm:col-span-6 md:col-span-3 lg:col-span-2">
+          {/* <div className="space-y-2 sm:col-span-6 md:col-span-3 lg:col-span-2">
             <h3 className="text-sm font-medium text-slate-200">Company</h3>
             <ul className="space-y-2 text-sm">
               <li>
@@ -111,10 +109,10 @@ export default function Footer({ border = false }: { border?: boolean }) {
                 </Link>
               </li>
             </ul>
-          </div>
+          </div> */}
 
           {/* 4th block */}
-          <div className="space-y-2 sm:col-span-6 md:col-span-3 lg:col-span-2">
+          {/* <div className="space-y-2 sm:col-span-6 md:col-span-3 lg:col-span-2">
             <h3 className="text-sm font-medium text-slate-200">Resources</h3>
             <ul className="space-y-2 text-sm">
               <li>
@@ -142,10 +140,10 @@ export default function Footer({ border = false }: { border?: boolean }) {
                 </Link>
               </li>
             </ul>
-          </div>
+          </div> */}
 
           {/* 5th block */}
-          <div className="space-y-2 sm:col-span-6 md:col-span-3 lg:col-span-2">
+          {/* <div className="space-y-2 sm:col-span-6 md:col-span-3 lg:col-span-2">
             <h3 className="text-sm font-medium text-slate-200">Social</h3>
             <ul className="flex gap-1">
               <li>
@@ -194,12 +192,18 @@ export default function Footer({ border = false }: { border?: boolean }) {
                 </Link>
               </li>
             </ul>
+          </div> */}
+          <div className="space-y-2 sm:col-span-6 md:col-span-3 lg:col-span-2">
+            Location
           </div>
         </div>
       </div>
 
       {/* Big text */}
-      <div className="relative -mt-16 h-60 w-full overflow-hidden" aria-hidden="true">
+      <div
+        className="relative -mt-16 h-60 w-full overflow-hidden"
+        aria-hidden="true"
+      >
         <div className="pointer-events-none absolute left-1/2 -z-10 -translate-x-1/2 text-center text-[348px] font-bold leading-none before:bg-linear-to-b before:from-slate-900 before:to-slate-950/20 before:to-80% before:bg-clip-text before:text-transparent before:content-['Simple'] after:absolute after:inset-0 after:bg-slate-900/50 after:bg-clip-text after:text-transparent after:mix-blend-darken after:content-['Simple']"></div>
         {/* Glow */}
         <div

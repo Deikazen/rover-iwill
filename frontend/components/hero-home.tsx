@@ -81,9 +81,8 @@ export default function HeroHome() {
                 data-aos="zoom-y-out"
                 data-aos-delay={300}
               >
-                R.O.V.E.R is an advanced unmanned exploration platform powered
-                by autonomous robotics that transforms how research teams survey
-                extreme and uncharted environments.
+                R.O.V.E.R adalah kendaraan untuk ekplorasi medan ekstrem jarak
+                jauh.
               </p>
               <div className="relative before:absolute before:inset-0 before:border-y before:[border-image:linear-gradient(to_right,transparent,--theme(--color-slate-800),transparent)1]">
                 <div
@@ -132,8 +131,8 @@ export default function HeroHome() {
                 data-aos="zoom-y-out"
                 data-aos-delay={750}
               >
-                Equipped with high-precision telemetry, LIDAR mapping, and
-                real-time environmental analysis.
+                Dilengkapi dengan sistem pemetaan real-time, navigasi berbasis
+                GPS, Antarmuka kendali jarak jauh.
               </p>
             </div>
           </div>
