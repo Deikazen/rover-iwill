@@ -4,9 +4,9 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import PageIllustration from "@/components/page-illustration";
 
-const RASPBERRY_PI_IP = "10.37.36.113"; // Ubah sesuai IP Pi Anda
-const VIDEO_STREAM_URL = `http://${RASPBERRY_PI_IP}:5000/video`;
-const VIDEO_STREAM_URL2 = `http://${RASPBERRY_PI_IP}:5000/video`;
+const RASPBERRY_PI_IP = "192.168.99.177"; // Ubah sesuai IP Pi Anda
+const VIDEO_STREAM_URL = `http://${RASPBERRY_PI_IP}:5000/video1`;
+const VIDEO_STREAM_URL2 = `http://${RASPBERRY_PI_IP}:5000/video2`;
 
 export default function DashboardContent() {
   // State for system status and telemetry
