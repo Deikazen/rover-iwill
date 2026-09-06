@@ -91,7 +91,8 @@ export default function HeroHome() {
                   data-aos="zoom-y-out"
                   data-aos-delay={450}
                 >
-                  <a
+                  {/* tombol Start Free Trial */}
+                  {/* <a
                     className="btn group mb-4 w-full bg-yellow-400 text-slate-950 font-bold shadow-sm hover:bg-yellow-300 sm:mb-0 sm:w-auto transition-all"
                     href="#0"
                   >
@@ -101,13 +102,14 @@ export default function HeroHome() {
                         -&gt;
                       </span>
                     </span>
-                  </a>
-                  <a
+                  </a> */}
+                  {/* Tombol Learn More */}
+                  {/* <a
                     className="btn w-full bg-slate-900 text-slate-200 border border-slate-800 shadow-sm hover:bg-slate-800 hover:text-white hover:border-slate-700 sm:ml-4 sm:w-auto transition-all"
                     href="#0"
                   >
                     Learn More
-                  </a>
+                  </a> */}
                 </div>
               </div>
             </div>
